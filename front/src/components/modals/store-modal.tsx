@@ -11,6 +11,7 @@ import { Button } from "../ui/button";
 import { useState } from "react";
 import axios from "axios"
 import { auth, useAuth  } from "@clerk/nextjs"
+import { toast } from "react-hot-toast";
 
 const formSchema= z.object({
     name: z.string().min(1),
@@ -33,17 +34,18 @@ export const StoreModal = () => {
     const onSubmit = async (values: z.infer<typeof formSchema>) =>{
         
         try {
-            
             setLoading(true)
             const requestBody = {
                 userId: userId,
                 ...values,
               };
-            //   console.log(requestBody)
             const response = await axios.post("http://localhost:3001/api/stores/create",requestBody)
-            // console.log(response.data)
+            window.location.assign(`/${response.data.id}`);
+            // toast.success("Store Created Sucessfuly!")
         } catch (error) {
-            console.log(error)
+            toast.error("Something went wrong.")
+        } finally {
+            setLoading(false)
         }
     }
 
