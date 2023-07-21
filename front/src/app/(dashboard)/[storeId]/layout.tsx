@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs";
 import axios from "axios";
 import {redirect} from "next/navigation"
+import Navbar from "@/components/navbar"
 
 export default async function DashboardLayout({
     children,
@@ -26,7 +27,7 @@ export default async function DashboardLayout({
     
       return (
         <>
-          <div>nav</div>
+          <Navbar/>
           {children}
         </>
       );
