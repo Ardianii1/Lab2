@@ -8,7 +8,11 @@ export const getAllStores = async (req:Request, res:Response) => {
   try {
     const {  userId } = req.query;
     console.log(userId)
-    if (!userId) {
+    const userIdRegex = /^user_(?=(?:[a-zA-Z]*\d){3})(?=\D*\d\D*)(?!.*\d{2})[a-zA-Z0-9]{26}$/;
+                        
+
+    // Validate the userId against the regex pattern
+    if (!userId ) {
       return res.status(403).json({ message: 'Unauthorized' });
     }
     const stores = await prismadb.store.findMany();
@@ -28,7 +32,7 @@ export const getStoreId = async (req:Request, res:Response) => {
     console.log("STORE ID",storeId)
     console.log("USER ID",userId)
     if (!userId || typeof userId !== "string") {
-      return res.status(403).json({ message: 'Unauthorized' });
+      return res.status(403).json({ message: 'ardian' });
     }
     const store = await prismadb.store.findFirst({
       where:{
