@@ -15,7 +15,6 @@ interface Store {
     id: string;
     name: string;
   }
-
 interface StoreSwitcherProps extends PopoverTriggerProps {
 }
 
@@ -25,17 +24,15 @@ export default function StoreSwitcher({
     const [stores, setStores] = useState<Store[]>([]);
 
 
+    const { userId } = useAuth();
     useEffect(() => {
         const fetchData = async () => {
           try {
-            const { userId } = useAuth();
             const response = await axios.get('http://localhost:3001/api/stores', {
               params: {
                 userId: userId,
               },
             });
-            console.log(userId)
-            console.log(response.data)
             setStores(response.data); // Assuming the response data is an array of store objects
           } catch (error) {
             console.error('Error fetching stores:', error);
@@ -54,10 +51,9 @@ export default function StoreSwitcher({
             label: store.name,
             value: store.id
     }));
-    console.log(formattedItems)
     const currentStore = formattedItems.find((item) => item.value === params.storeId );
     const onStoreSelect = (store: {value: string, label: string})=>{
-        setOpen(false)
+        setOpen(true)
         router.push(`${store.value}`)
     }
     
@@ -78,12 +74,11 @@ export default function StoreSwitcher({
                         <CommandGroup heading="Stores">
                             
                             {formattedItems.map((store) =>(
-                                <CommandInput key={store.value} onSelect={() => onStoreSelect(store)} className="text-sm">
+                                <CommandItem key={store.value} onSelect={() => onStoreSelect(store)} className="text-sm">
                                     <StoreIcon className="mr-2 h-4 w-4"/>
                                     {store.label}
-                                    test
                                     <Check className={cn("ml-auto h-4 w-4", currentStore?.value === store.value ? "opacity-100" : "opacity-0")} />
-                                </CommandInput>
+                                </CommandItem>
                             ))}
                         </CommandGroup>
                     </CommandList>

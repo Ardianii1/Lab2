@@ -32,7 +32,7 @@ export const getStoreId = async (req:Request, res:Response) => {
     console.log("STORE ID",storeId)
     console.log("USER ID",userId)
     if (!userId || typeof userId !== "string") {
-      return res.status(403).json({ message: 'ardian' });
+      return res.status(403).json({ message: 'Unauthorized' });
     }
     const store = await prismadb.store.findFirst({
       where:{
@@ -100,3 +100,68 @@ export const createStore = async (req:Request, res:Response) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+export const patchStoreId = async (req:Request, res:Response) => {
+  console.log("UPDATEEEEEE ")
+  console.log(req.body)
+  try {
+    const { storeId } = req.params
+    console.log(storeId)
+    const { name, userId } = req.body;
+    console.log(userId)
+    if (!userId || typeof userId !== "string") {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+    if (!storeId) {
+      console.log("Store not found")
+      return res.status(404).json({ message: 'Store not found' });
+    }
+    if (!name) {
+      return res.status(400).json({ message: 'Name is required' });
+    }
+
+    const store = await prismadb.store.update({
+      where:{
+        id: storeId,
+        userId:userId,
+      },
+      data:{
+        name
+      }
+    })
+    console.log("STORE UPDATED SUCCESSFULY")
+    res.json(store);
+
+  } catch (error) {
+    
+  }
+}
+
+
+export const deleteStoreId = async (req:Request, res:Response) => {
+  try {
+    const { storeId } = req.params
+    const { name, userId } = req.body;
+    if (!userId || typeof userId !== "string") {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+    if (!storeId) {
+      console.log("Store not found")
+      return res.status(404).json({ message: 'Store not found' });
+    }
+    if (!name) {
+      return res.status(400).json({ message: 'Name is required' });
+    }
+
+    const store = prismadb.store.deleteMany({
+      where:{
+        id: storeId,
+        userId:userId,
+      },
+    })
+    res.json(store);
+
+  } catch (error) {
+    
+  }
+}
