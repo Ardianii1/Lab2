@@ -58,8 +58,8 @@ const CategoryClient = () => {
     <>
         <div className="flex items-center justify-between">
             <Heading
-                title={`Billboards (${categoriesData.length})`}
-                description="Manage billboards for your store"
+                title={`Categories (${categoriesData.length})`}
+                description="Manage categories for your store"
             />
             <Button onClick={() => router.push(`http://localhost:3000/${params.storeId}/categories/new`)} >
                 <Plus className="mr-2 h-4 w-4" />
@@ -67,7 +67,7 @@ const CategoryClient = () => {
             </Button>
         </div>
         <Separator/>
-        <DataTable columns={columns} data={formattedCategories} searchKey="label" />
+        <DataTable columns={columns} data={formattedCategories} searchKey="billboardId" />
     </>
   )
 }

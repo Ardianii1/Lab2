@@ -1,16 +1,12 @@
-"use client"
+// "use client"
 import { useEffect, useState } from "react";
 import {  CategoryForm } from "./components/category-Form"
 import axios from "axios";
 import { useAuth } from "@clerk/nextjs";
 
-const CategoriesPage = async ({
-    // params
-}:{
-    // params:{ billboardId: string}
-}) => {
-    const [categoriesData, setCategoriesData] = useState({name:"",billboardId:""})
-    const {userId } = useAuth()
+const CategoriesPage = async () => {
+    // const [categoriesData, setCategoriesData] = useState({name:"",billboardId:""})
+    // const {userId } = useAuth()
 
     // useEffect(() => {
     //     const fetchData = async () => {

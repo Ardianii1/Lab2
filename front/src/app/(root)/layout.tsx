@@ -1,6 +1,6 @@
 "use client"
 import {useAuth } from "@clerk/nextjs";
-import {redirect} from "next/navigation"
+import {redirect, useRouter} from "next/navigation"
 import axios from "axios";
 import { StoreModal } from "@/components/modals/store-modal";
 import { toast } from "react-hot-toast";
@@ -13,17 +13,16 @@ export default async function SetupLayout({
     children: React.ReactNode
 }){
     const { userId } = useAuth()
+    const router = useRouter()
+    if (!userId) {
+        redirect("/sign-in")
+    }
     useEffect(()=>{
         async function fetchStore() {
-            
-        
-        if (!userId) {
-            redirect("/sign-in")
-        }
         try {
             const store = await axios.get(`http://localhost:3001/api/stores/user/${userId}`)
             if (store) {
-                redirect(`http://localhost:3000/${store.data.id}`)
+                router.push(`http://localhost:3000/${store.data.id}`)
             }
         } catch (error) {
             console.log(error)

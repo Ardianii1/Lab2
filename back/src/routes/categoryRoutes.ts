@@ -4,8 +4,8 @@ const router = express.Router();
 
 router.get("/:storeId/all",getAllCateogries)
 router.get("/:categoryId",getCategoryId)
-router.post("/create", createCategory)
-router.patch(":storeId/update/:categoryId", patchCategory)
+router.post("/:storeId/create", createCategory)
+router.patch("/:storeId/update/:categoryId", patchCategory)
 router.delete("/:storeId/delete/:categoryId",deleteCategory)
 
 export default router;

@@ -21,6 +21,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 interface Category {
     name: string;
     id: string;
+    billboardId: string
 }
 interface Billboard {
     label: string;
@@ -91,7 +92,7 @@ export const CategoryForm:React.FC<CategoryFormProps> = () =>{
     const onSubmit = async (data: CategoryFormValues) => {
         try {
             setLoading(true)
-            console.log(billboardId)
+            console.log(data)
 
             if (categoryData) {
                await axios.patch(`http://localhost:3001/api/categories/${params.storeId}/update/${params.categoryId}`, {
@@ -102,7 +103,7 @@ export const CategoryForm:React.FC<CategoryFormProps> = () =>{
                 await axios.post(`http://localhost:3001/api/categories/${params.storeId}/create`, {
                     ...data,
                     userId: userId,
-                    billboardId: billboardId
+                    // billboardId: billboardId,
                 })
             }
             router.refresh()
