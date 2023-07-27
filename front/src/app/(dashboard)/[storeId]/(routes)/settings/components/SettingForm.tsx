@@ -15,6 +15,8 @@ import { useAuth } from "@clerk/nextjs";
 import { useParams } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { AlertModal } from "@/components/modals/alert-modal";
+import { ApiAlert } from "@/components/ui/api-alert";
 
 interface Store {
     id: string;
@@ -46,7 +48,8 @@ export const SettingsForm:React.FC<SettingsFormProps> = () =>{
         const response = await axios.get(`http://localhost:3001/api/stores/${params.storeId}`, {
             params: {
               userId: userId,
-            },});
+            }
+        });
             // console.log(response.data)
         setStoreData(response.data); // Assuming the response data is an object representing the store
       } catch (error) {
@@ -79,11 +82,33 @@ export const SettingsForm:React.FC<SettingsFormProps> = () =>{
         }
     }
 
+    const onDelete = async() => {
+        try {
+            setLoading(true)
+            axios.delete(`http://localhost:3001/api/stores/delete/${params.storeId}`, {
+                data: {
+                  userId: userId,
+                }
+            })
+
+            router.refresh()
+            router.push("/")
+            toast.success("Store Deleted successfuly")
+
+        } catch (error) {
+            toast.error("Make sure you removed all products and categories first.")
+        } finally {
+            setLoading(false)
+            setOpen(false)
+        }
+    }
+
     return (
         <>
+        <AlertModal isOpen={open}  onClose={() => setOpen(false)}  onConfirm={onDelete} loading={loading} />
             <div className="flex items-center justify-between">
                 <Heading title="Settings" description="Manage store settings"/>
-                <Button disabled={loading} variant="destructive" size="sm" onClick={() => {}}>
+                <Button disabled={loading} variant="destructive" size="sm" onClick={() => setOpen(true)}>
                     <Trash className="h-4 w-4"/>
                 </Button>    
             </div>
@@ -108,6 +133,8 @@ export const SettingsForm:React.FC<SettingsFormProps> = () =>{
                     </Button>
                 </form>
             </Form>
+            {/* <Separator/>
+            <ApiAlert title="test" description="test" variant="public"/> */}
         </>
     )
 } 

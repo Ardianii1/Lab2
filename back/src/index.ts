@@ -1,5 +1,6 @@
 import express, { Application, Request, Response } from 'express';
 import storeRoutes from "./routes/storeRoutes.js";
+// import billboardRoutes from "./routes/billboardRoutes.js";
 import cors from 'cors';
 import {
   ClerkExpressRequireAuth,
@@ -22,6 +23,7 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Hello, world!');
 });
 app.use('/api/stores',storeRoutes);
+// app.use('/api/billboards',billboardRoutes);
 app.listen(port, () => {
   console.log(`Server is running on port http://localhost:${port}`);
 });

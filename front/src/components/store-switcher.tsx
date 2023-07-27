@@ -54,7 +54,7 @@ export default function StoreSwitcher({
     const currentStore = formattedItems.find((item) => item.value === params.storeId );
     const onStoreSelect = (store: {value: string, label: string})=>{
         setOpen(true)
-        router.push(`${store.value}`)
+        router.push(`/${store.value}`)
     }
     
     return (
@@ -74,7 +74,7 @@ export default function StoreSwitcher({
                         <CommandGroup heading="Stores">
                             
                             {formattedItems.map((store) =>(
-                                <CommandItem key={store.value} onSelect={() => onStoreSelect(store)} className="text-sm">
+                                <CommandItem key={store.value} onSelect={() => onStoreSelect(store)} className="text-sm cursor-pointer">
                                     <StoreIcon className="mr-2 h-4 w-4"/>
                                     {store.label}
                                     <Check className={cn("ml-auto h-4 w-4", currentStore?.value === store.value ? "opacity-100" : "opacity-0")} />
