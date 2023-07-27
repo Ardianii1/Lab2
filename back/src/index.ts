@@ -1,5 +1,6 @@
 import express, { Application, Request, Response } from 'express';
 import storeRoutes from "./routes/storeRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js"
 // import billboardRoutes from "./routes/billboardRoutes.js";
 import cors from 'cors';
 import {
@@ -24,6 +25,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 app.use('/api/stores',storeRoutes);
 // app.use('/api/billboards',billboardRoutes);
+app.use('/api/categories', categoryRoutes)
 app.listen(port, () => {
   console.log(`Server is running on port http://localhost:${port}`);
 });
