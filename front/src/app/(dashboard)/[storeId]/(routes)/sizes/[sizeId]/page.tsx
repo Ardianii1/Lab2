@@ -4,13 +4,9 @@ import { SizeForm } from "./components/size-Form"
 import axios from "axios";
 import { useAuth } from "@clerk/nextjs";
 
-const SizePage = async ({
-    // params
-}:{
-    // params:{ sizeId: string}
-}) => {
-    const [sizeData, setSizeData] = useState({id:"",name:"",value:""})
-    const {userId } = useAuth()
+const SizePage = async () => {
+    // const [sizeData, setSizeData] = useState()
+    // const {userId } = useAuth()
 
   
 

@@ -54,7 +54,7 @@ export const SizeForm:React.FC<SizeFormProps> = () =>{
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/api/stores/sizes/${params.sizeId}`);
+        const response = await axios.get(`http://localhost:3001/api/sizes/${params.sizeId}`);
         // console.log(response)
 
         if (!response) {
@@ -82,12 +82,12 @@ export const SizeForm:React.FC<SizeFormProps> = () =>{
             console.log(data)
 
             if (sizeData) {
-               await axios.patch(`http://localhost:3001/api/stores/${params.storeId}/sizes/${params.sizeId}`, {
+               await axios.patch(`http://localhost:3001/api/sizes/${params.storeId}/update/${params.sizeId}`, {
                     ...data,
                     userId: userId,
                   })
             }else{
-                await axios.post(`http://localhost:3001/api/stores/${params.storeId}/sizes/create`, {
+                await axios.post(`http://localhost:3001/api/sizes/${params.storeId}/create`, {
                     ...data,
                     userId: userId,
                 })
@@ -107,7 +107,7 @@ export const SizeForm:React.FC<SizeFormProps> = () =>{
         try {
             setLoading(true)
             console.log("deleting...")
-            axios.delete(`http://localhost:3001/api/stores/${params.storeId}/sizes/${params.sizeId}`, {
+            axios.delete(`http://localhost:3001/api/sizes/${params.storeId}/delete/${params.sizeId}`, {
                 data: {
                   userId: userId,
                 }
@@ -140,22 +140,17 @@ export const SizeForm:React.FC<SizeFormProps> = () =>{
 
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
-                <FormField control={form.control} name="name" 
+                    <div className="grid grid-cols-3 gap-8">
+                        <FormField control={form.control} name="name" 
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Name</FormLabel>
                                 <FormControl>
-                                    <ImageUpload value={field.value ? [field.value] : []}
-                                    disabled={loading}
-                                    onChange={(url) => field.onChange(url)}
-                                    onRemove={() => field.onChange("")}
-                                    />
+                                    <Input disabled={loading} placeholder="Size name" {...field} />
                                 </FormControl>
                                 <FormMessage/>
                             </FormItem>
-                            
                         )}/>
-                    <div className="grid grid-cols-3 gap-8">
                         <FormField control={form.control} name="value" 
                         render={({ field }) => (
                             <FormItem>

@@ -35,14 +35,14 @@ export const CellAction:React.FC<CellActionProps> = ({
         try {
             setLoading(true)
             // console.log("deleting...")
-            axios.delete(`http://localhost:3001/api/stores/${params.storeId}/billboards/${data.id}`, {
+            axios.delete(`http://localhost:3001/api/sizes/${params.storeId}/delete/${data.id}`, {
                 data: {
                   userId: userId,
                 }
             })
             // console.log("DELETEDD")
+            router.push(`http://localhost:3000/${params.storeId}/sizes`)
             router.refresh()
-            // router.push(`http://localhost:3000/${params.storeId}/billboards`)
             toast.success("Size Deleted successfuly")
 
         } catch (error) {
@@ -71,7 +71,7 @@ export const CellAction:React.FC<CellActionProps> = ({
                 <Copy className="mr-2 h-4 w-4"/>
                 Copy Id
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer" onClick={() => router.push(`http://localhost:3000/${params.storeId}/billboards/${data.id}`)} >
+            <DropdownMenuItem className="cursor-pointer" onClick={() => router.push(`http://localhost:3000/${params.storeId}/sizes/${data.id}`)} >
                 <Edit className="mr-2 h-4 w-4"/>
                 Edit
             </DropdownMenuItem>

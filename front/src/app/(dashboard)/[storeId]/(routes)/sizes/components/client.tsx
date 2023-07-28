@@ -25,7 +25,7 @@ const SizeClient = () => {
   useEffect(() => {
       const fetchSizes = async () => {
         try {
-          const response = await axios.get(`http://localhost:3001/api/stores/${params.storeId}/sizes/`);
+          const response = await axios.get(`http://localhost:3001/api/sizes/${params.storeId}/all`);
           console.log(response)
   
           if (!response) {
@@ -67,7 +67,7 @@ const SizeClient = () => {
             </Button>
         </div>
         <Separator/>
-        <DataTable columns={columns} data={formattedSizes} searchKey="label" />
+        <DataTable columns={columns} data={formattedSizes} searchKey="name" />
         
         
         
