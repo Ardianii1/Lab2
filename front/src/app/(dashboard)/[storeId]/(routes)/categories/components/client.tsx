@@ -12,7 +12,7 @@ import { DataTable } from "@/components/ui/data-table"
 
 interface Categories {
   id:string
-  label: string;
+  name: string;
   billboardLabel: string
   createdAt: Date
 }
@@ -48,7 +48,8 @@ const CategoryClient = () => {
 
     const formattedCategories: CategoryColumn[] = categoriesData.map((item) => ({
       id: item.id,
-      name: item.label,
+      name: item.name,
+      billboardLabel: item.billboardLabel,
       createdAt: item.createdAt,
     }));
     
@@ -67,7 +68,7 @@ const CategoryClient = () => {
             </Button>
         </div>
         <Separator/>
-        <DataTable columns={columns} data={formattedCategories} searchKey="billboardId" />
+        <DataTable columns={columns} data={formattedCategories} searchKey="name" />
     </>
   )
 }

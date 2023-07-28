@@ -30,19 +30,19 @@ export const columns: ColumnDef<CategoryColumn>[] = [
       },
   },
   {
-    accessorKey: "billboardId",
+    accessorKey: "billboard",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Billboard Name
+          Billboard
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
-    // cell :({ row }) => row.original.billboardLabel,
+    cell: ({ row }) => row.original.billboardLabel,
   },
   {
     accessorKey: "createdAt",
