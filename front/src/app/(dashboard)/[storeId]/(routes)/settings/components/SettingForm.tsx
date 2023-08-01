@@ -51,7 +51,8 @@ export const SettingsForm:React.FC<SettingsFormProps> = () =>{
             }
         });
             // console.log(response.data)
-        setStoreData(response.data); // Assuming the response data is an object representing the store
+        setStoreData(response.data);
+        form.reset(response.data) // Assuming the response data is an object representing the store
       } catch (error) {
         console.error('Error fetching store:', error);
       }
@@ -62,7 +63,7 @@ export const SettingsForm:React.FC<SettingsFormProps> = () =>{
 
   const form = useForm<SettingFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { name: storeData?.name ?? "" } // Use storeData.name as the default value for the form field
+    defaultValues: {  } // Use storeData.name as the default value for the form field
   });
     
     const onSubmit = async (data: SettingFormValues) => {

@@ -63,6 +63,7 @@ export const SizeForm:React.FC<SizeFormProps> = () =>{
         }
             // console.log(response.data)
         setSizeData(response.data);
+        form.reset(response.data)
       } catch (error) {
         console.error('Error fetching store:', error);
       }
@@ -73,7 +74,7 @@ export const SizeForm:React.FC<SizeFormProps> = () =>{
 
   const form = useForm<SizeFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: sizeData 
+    defaultValues: {} 
   });
     
     const onSubmit = async (data: SizeFormValues) => {

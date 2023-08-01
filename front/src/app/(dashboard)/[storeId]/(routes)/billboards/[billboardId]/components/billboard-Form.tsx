@@ -61,6 +61,7 @@ export const BillboardForm:React.FC<BillboardFormProps> = () =>{
         }
             // console.log(response.data)
         setBillboardData(response.data);
+        form.reset(response.data)
       } catch (error) {
         console.error('Error fetching store:', error);
       }
@@ -71,7 +72,7 @@ export const BillboardForm:React.FC<BillboardFormProps> = () =>{
 
   const form = useForm<BillboardFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: billboardData 
+    defaultValues: {} 
   });
     
     const onSubmit = async (data: BillboardFormValues) => {

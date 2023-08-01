@@ -71,7 +71,7 @@ const ReviewClient = () => {
         </Button>
       </div>
       <Separator />
-      <DataTable columns={columns} data={formattedreviews} searchKey="name" />
+      <DataTable columns={columns} data={formattedreviews} searchKey="title" />
 
       {/* <div>
             { billboardsData.map((billboard) => (

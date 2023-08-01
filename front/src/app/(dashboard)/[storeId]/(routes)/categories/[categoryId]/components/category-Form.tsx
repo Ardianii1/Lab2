@@ -73,6 +73,8 @@ export const CategoryForm:React.FC<CategoryFormProps> = () =>{
             // console.log(response.data)
             setCategoryData(response.data);
             setBillboardData(billboardResponse.data);
+            form.reset(response.data,billboardResponse.data)
+            console.log(response.data, billboardResponse.data);
       } catch (error) {
         console.error('Error fetching store:', error);
       }
@@ -83,10 +85,7 @@ export const CategoryForm:React.FC<CategoryFormProps> = () =>{
 
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: categoryData || {
-        name: '',
-        billboardId: '',
-      }
+    defaultValues: {}
   });
     
     const onSubmit = async (data: CategoryFormValues) => {

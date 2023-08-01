@@ -13,12 +13,15 @@ import { DataTable } from "@/components/ui/data-table"
 interface Categories {
   id:string
   name: string;
-  billboardLabel: string
+  billboardId: string
   createdAt: Date
 }
 
 const CategoryClient = () => { 
   const [categoriesData, setCategoriesData] = useState<Categories[] | []>([]); 
+  const [formattedCategories, setFormattedCategories] = useState<
+    CategoryColumn[]
+  >([]);
 
 
   useEffect(() => {
@@ -45,13 +48,58 @@ const CategoryClient = () => {
     const router = useRouter()
     const params = useParams()
 
+    const fetchBillboardLabel = async (
+      billboardId: string
+    ): Promise<string> => {
+      try {
+        const response = await axios.get(`http://localhost:3001/api/stores/billboards/${billboardId}`);
 
-    const formattedCategories: CategoryColumn[] = categoriesData.map((item) => ({
-      id: item.id,
-      name: item.name,
-      billboardLabel: item.billboardLabel,
-      createdAt: item.createdAt,
-    }));
+        if (response && response.data && response.data.label) {
+          return response.data.label;
+        }
+        return "N/A"; // Return a default label if billboard data not found
+      } catch (error) {
+        console.error("Error fetching billboard:", error);
+        return "N/A";
+      }
+    };
+
+    const fetchBillboardLabelsForCategories = async (): Promise<{
+      [key: string]: string;
+    }> => {
+      const billboardLabels: { [key: string]: string } = {};
+      for (const category of categoriesData) {
+        const label = await fetchBillboardLabel(category.billboardId);
+        billboardLabels[category.id] = label;
+      }
+      return billboardLabels;
+    };
+
+    useEffect(() => {
+      const updateBillboardLabels = async () => {
+        if (categoriesData.length > 0) {
+          const billboardLabels = await fetchBillboardLabelsForCategories();
+          setFormattedCategories(
+            categoriesData.map((item) => ({
+              id: item.id,
+              name: item.name,
+              billboardId: item.billboardId,
+              createdAt: format(item.createdAt, "dd-MM-yyy HH:mm:ss"),
+              billboardLabel: billboardLabels[item.id],
+            }))
+          );
+        }
+      };
+      updateBillboardLabels();
+    }, [categoriesData]);
+
+
+    // const formattedCategories: CategoryColumn[] = categoriesData.map((item) => ({
+    //   id: item.id,
+    //   name: item.name,
+    //   billboardId: item.billboardId,
+    //   createdAt: item.createdAt,
+    // }));
     
 
 

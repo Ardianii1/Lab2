@@ -30,7 +30,7 @@ export const columns: ColumnDef<CategoryColumn>[] = [
       },
   },
   {
-    accessorKey: "billboard",
+    accessorKey: "billboardId",
     header: ({ column }) => {
       return (
         <Button
