@@ -74,7 +74,7 @@ export const CategoryForm:React.FC<CategoryFormProps> = () =>{
             setCategoryData(response.data);
             setBillboardData(billboardResponse.data);
             form.reset(response.data,billboardResponse.data)
-            console.log(response.data, billboardResponse.data);
+            console.log(response.data,billboardResponse.data)
       } catch (error) {
         console.error('Error fetching store:', error);
       }

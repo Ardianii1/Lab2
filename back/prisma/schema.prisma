@@ -15,8 +15,9 @@ model Store {
   billboards Billboard[] @relation("StoreToBillboard")
   categories Category[]  @relation("StoreToCategory")
   sizes      Size[]      @relation("StoreToSize")
-  brands     Brand[]  @relation("StoreToBrand")
-  reviews    Review[] @relation("StoreToReview")
+  brands     Brand[]     @relation("StoreToBrand")
+  products   Product[]   @relation("StoreToProduct")
+  reviews    Review[]    @relation("StoreToReview")
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 }
@@ -41,6 +42,7 @@ model Category {
   billboardId String
   billboard   Billboard @relation(fields: [billboardId], references: [id])
   name        String
+  products    Product[] @relation("CategoryToProduct")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -49,40 +51,83 @@ model Category {
 }
 
 model Size {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   storeId   String
-  store     Store    @relation("StoreToSize", fields: [storeId], references: [id])
+  store     Store     @relation("StoreToSize", fields: [storeId], references: [id])
   name      String
   value     String
-  createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updateAt  DateTime  @updatedAt
 
   @@index([storeId])
 }
 
 model Brand {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   storeId   String
-  store     Store    @relation("StoreToBrand", fields: [storeId], references: [id])
+  store     Store     @relation("StoreToBrand", fields: [storeId], references: [id])
   name      String
-  createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updateAt  DateTime  @updatedAt
+  Product   Product[] @relation("BrandToProduct")
 
   @@index([storeId])
 }
 
 model Review {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   userId    String
   storeId   String
-  store     Store    @relation("StoreToReview", fields: [storeId], references: [id])
-  title     String 
+  store     Store     @relation("StoreToReview", fields: [storeId], references: [id])
+  title     String
   content   String
   rating    Int
-  createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
-
+  createdAt DateTime  @default(now())
+  updateAt  DateTime  @updatedAt
+  Product   Product[] @relation("ReviewToProduct")
 
   @@index([storeId])
+}
 
+model Product {
+  id          String   @id @default(uuid())
+  userId      String
+  storeId     String
+  store       Store    @relation("StoreToProduct", fields: [storeId], references: [id])
+  categoryId  String
+  category    Category @relation("CategoryToProduct", fields: [categoryId], references: [id])
+  sizeId      String // Foreign Key to Size
+  size        Size     @relation(fields: [sizeId], references: [id])
+  brandId     String
+  brand       Brand    @relation("BrandToProduct", fields: [brandId], references: [id])
+  reviewId    String?
+  review      Review?   @relation("ReviewToProduct", fields: [reviewId], references: [id])
+  //TODO: tags model
+  //TODO: Attributes model
+  name        String
+  description String
+  status      String
+  price       Decimal
+  stock       Int
+  images      Image[]
+  createdAt   DateTime @default(now())
+  updateAt    DateTime @updatedAt
+
+  @@index([storeId])
+  @@index([categoryId])
+  @@index([sizeId])
+  @@index([brandId])
+  @@index([reviewId])
+}
+
+model Image {
+  id        String   @id @default(uuid())
+  productId String // Foreign Key to Product
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String // URL of the image
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
 }

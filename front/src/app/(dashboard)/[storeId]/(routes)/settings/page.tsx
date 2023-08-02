@@ -11,10 +11,8 @@ interface SettingsPageProps{
     };
 }
 
-const SettingsPage:React.FC<SettingsPageProps> = async({
-    params
-}) =>{
-    const [store, setStore] = useState();
+const SettingsPage:React.FC<SettingsPageProps> = async() =>{
+    // const [store, setStore] = useState();
 
     return (
         <div className="flex-col">
