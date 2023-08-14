@@ -5,6 +5,7 @@ import sizeRoutes from "./routes/sizeRoutes.js"
 import brandRoutes from "./routes/brandRoutes.js"
 import reviewRoutes from "./routes/reviewRoutes.js"
 import productRoutes from "./routes/productRoutes.js"
+import tagRoutes from "./routes/tagRoutes.js"
 // import billboardRoutes from "./routes/billboardRoutes.js";
 import cors from 'cors';
 import {
@@ -34,6 +35,7 @@ app.use('/api/sizes', sizeRoutes)
 app.use('/api/brands', brandRoutes)
 app.use('/api/reviews', reviewRoutes)
 app.use('/api/products', productRoutes)
+app.use('/api/tags', tagRoutes)
 app.listen(port, () => {
   console.log(`Server is running on port http://localhost:${port}`);
 });
