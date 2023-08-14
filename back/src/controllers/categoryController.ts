@@ -157,6 +157,15 @@ export const deleteCategory = async (req:Request, res:Response) => {
       if (!storeByUserId) {
         return res.status(401).json({ message: 'Unauthorized' });
       }
+      const productsInCategory = await prismadb.product.findFirst({
+      where: {
+        categoryId,
+      },
+    });
+
+    if (productsInCategory) {
+      return res.status(400).json({ message: 'Make sure you delete all products in this category first.' });
+    }
       const category = await prismadb.category.deleteMany({
         where:{
           id: categoryId

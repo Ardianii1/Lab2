@@ -33,19 +33,27 @@ export const CellAction:React.FC<CellActionProps> = ({
 
     const onDelete = async() => {
         try {
-            setLoading(true)
-            // console.log("deleting...")
-            axios.delete(`http://localhost:3001/api/categories/${params.storeId}/delete/${data.id}`, {
-                data: {
-                  userId: userId,
-                }
-            })
-            // console.log("DELETEDD")
-            router.refresh()
-            toast.success("Category Deleted successfuly")
-
+          setLoading(true);
+          // console.log("deleting...")
+          const response = await axios.delete(
+            `http://localhost:3001/api/categories/${params.storeId}/delete/${data.id}`,
+            {
+              data: {
+                userId: userId,
+              },
+            }
+          );
+          // console.log("DELETEDD")
+          if (response.data.message) {
+            toast.error(response.data.message);
+          } else {
+            router.refresh();
+            router.push(`http://localhost:3000/${params.storeId}/categories`);
+            toast.success("Category Deleted successfully");
+          }
         } catch (error) {
-            toast.error("Make sure you removed all products and categories first.")
+            console.log(error)
+            toast.error("Make sure you removed all products of this category first.")
         } finally {
             setLoading(false)
             setOpen(false)
