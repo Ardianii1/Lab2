@@ -14,6 +14,11 @@ export const getAllProducts = async (req: Request, res: Response) => {
       where: {
         storeId: storeId,
       },
+      include: {
+        tags:true,
+      //   images: true,
+      //   attributes: true,
+      },
     });
     res.json(products);
   } catch (error) {
@@ -37,6 +42,7 @@ export const getProductId = async (req: Request, res: Response) => {
       },
       include: {
         images: true,
+        attributes: true,
       },
     });
     res.json(product);
@@ -59,9 +65,11 @@ export const createProduct = async (req: Request, res: Response) => {
       price,
       stock,
       images,
+      tags,
+      attributes,
       userId,
     } = req.body;
-    console.log(images)
+    console.log("TAGS",tags);
     const { storeId } = req.params;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -107,6 +115,28 @@ export const createProduct = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
+    const existingAttributes = await Promise.all(
+      attributes.map(async (attr: { name: string; value: string }) => {
+        const existingAttribute = await prismadb.attribute.findFirst({
+          where: {
+            name: attr.name,
+            value: attr.value,
+          },
+        });
+        return existingAttribute;
+      })
+    );
+
+    // Create an array to hold attribute IDs
+    const attributeIds: string[] = [];
+
+    // Loop through existingAttributes and add IDs to attributeIds
+    existingAttributes.forEach((existingAttribute) => {
+      if (existingAttribute) {
+        attributeIds.push(existingAttribute.id);
+      }
+    });
+
     const product = await prismadb.product.create({
       data: {
         storeId: storeId,
@@ -119,15 +149,22 @@ export const createProduct = async (req: Request, res: Response) => {
         price: price,
         status: status,
         stock: stock,
+        tags: {
+          connect: tags.map((tagId : string) => ({ id: tagId })),
+        },
+        attributes: {
+          createMany: {
+            data: attributes,
+          },
+        },
         images: {
-          createMany:{
-            data:[
-              ...images.map((image:{url:string})=> image)
-            ]
-          }
-        }
+          createMany: {
+            data: [...images.map((image: { url: string }) => image)],
+          },
+        },
       },
     });
+    
     res.json(product);
   } catch (error) {
     console.error("Error creating product:", error);

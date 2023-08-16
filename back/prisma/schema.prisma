@@ -18,7 +18,7 @@ model Store {
   brands     Brand[]     @relation("StoreToBrand")
   products   Product[]   @relation("StoreToProduct")
   reviews    Review[]    @relation("StoreToReview")
-  tag      Tag[]      @relation("StoreToTag")
+  tag        Tag[]       @relation("StoreToTag")
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 }
@@ -92,31 +92,29 @@ model Review {
 }
 
 model Product {
-  id          String   @id @default(uuid())
+  id          String       @id @default(uuid())
   userId      String
   storeId     String
-  store       Store    @relation("StoreToProduct", fields: [storeId], references: [id])
+  store       Store        @relation("StoreToProduct", fields: [storeId], references: [id])
   categoryId  String
-  category    Category @relation("CategoryToProduct", fields: [categoryId], references: [id])
+  category    Category     @relation("CategoryToProduct", fields: [categoryId], references: [id])
   sizeId      String // Foreign Key to Size
-  size        Size     @relation(fields: [sizeId], references: [id])
+  size        Size         @relation(fields: [sizeId], references: [id])
   brandId     String
-  brand       Brand    @relation("BrandToProduct", fields: [brandId], references: [id])
+  brand       Brand        @relation("BrandToProduct", fields: [brandId], references: [id])
   reviewId    String?
-  review      Review?   @relation("ReviewToProduct", fields: [reviewId], references: [id])
+  review      Review?      @relation("ReviewToProduct", fields: [reviewId], references: [id])
   tagId       String?
-  tags        Tag[] @relation("TagToProduct")
-
-  //TODO: tags model
-  //TODO: Attributes model
+  tags        Tag[]        @relation("TagToProduct")
+  attributes  Attribute[]
   name        String
   description String
   status      String
   price       Decimal
   stock       Int
   images      Image[]
-  createdAt   DateTime @default(now())
-  updateAt    DateTime @updatedAt
+  createdAt   DateTime     @default(now())
+  updateAt    DateTime     @updatedAt
 
   @@index([storeId])
   @@index([categoryId])
@@ -135,7 +133,6 @@ model Image {
 
   @@index([productId])
 }
-
 model Tag{
   id String @id @default(uuid())
   name String
@@ -145,8 +142,16 @@ model Tag{
   products Product[] @relation("TagToProduct")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
   @@index([productId])
   @@index([storeId])
-
+}
+model Attribute {
+  id        String   @id @default(uuid())
+  productId String // Foreign Key to Product
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name      String
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([productId])
 }

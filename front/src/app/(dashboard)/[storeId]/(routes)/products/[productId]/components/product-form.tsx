@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -31,8 +32,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
-interface Product {
+type Product = {
   id: string;
   name: string;
   description: string;
@@ -40,22 +42,32 @@ interface Product {
   status: string;
   stock: number;
   images: string[];
+  attributes: string[];
+  tags: string[];
   createdAt: Date;
-}
+};
 
-interface Category {
+type Category = {
   name: string;
   id: string;
-}
+};
 
-interface Size {
+type Size = {
   name: string;
   id: string;
-}
-interface Brand {
+};
+type Tag = {
+  id: string;
+  name: string;
+};
+type Brand = {
   name: string;
   id: string;
-}
+};
+type Attribute = {
+  name: string;
+  value: string;
+};
 
 const formSchema = z.object({
   categoryId: z.string().min(1),
@@ -67,6 +79,10 @@ const formSchema = z.object({
   status: z.string().min(1),
   stock: z.coerce.number().min(1),
   images: z.object({ url: z.string() }).array(),
+  attributes: z.object({ name: z.string(), value: z.string() }).array(),
+  tags: z.array(z.string()).refine((value) => value.some((tag) => tag), {
+    message: "You have to select at least one tag.",
+  }),
 });
 
 type ProductFormValues = z.infer<typeof formSchema>;
@@ -89,6 +105,8 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
         status: string;
         stock: number;
         images: [];
+        attributes: [];
+        tags: [];
       }
   >({
     categoryId: "",
@@ -100,11 +118,18 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
     status: "",
     stock: 0,
     images: [],
+    attributes: [],
+    tags: [],
   });
   const [categoryData, setCategoryData] = useState<Category[] | []>([]);
   const [sizeData, setSizeData] = useState<Size[] | []>([]);
   const [brandData, setBrandData] = useState<Brand[] | []>([]);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [attributes, setAttributes] = useState<Attribute[] | []>([
+    { name: "", value: "" },
+  ]);
+  const [tagData, setTagData] = useState<Tag[] | []>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const params = useParams();
   const router = useRouter();
@@ -121,19 +146,22 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
         const response = await axios.get(
           `http://localhost:3001/api/products/${params.productId}`
         );
-        console.log(response)
+        // console.log(response);
         const categoryResponse = await axios.get(
           `http://localhost:3001/api/categories/${params.storeId}/all`
         );
-        console.log(categoryResponse)
+        // console.log(categoryResponse);
         const sizeResponse = await axios.get(
           `http://localhost:3001/api/sizes/${params.storeId}/all`
         );
-        console.log(sizeResponse)
+        // console.log(sizeResponse);
         const brandResponse = await axios.get(
           `http://localhost:3001/api/brands/${params.storeId}/all`
         );
-        console.log(brandResponse)
+        const tagsResponse = await axios.get(
+          `http://localhost:3001/api/tags/${params.storeId}/all`
+        );
+        console.log(tagsResponse);
         // console.log(categoryResponse, sizeResponse, brandResponse);
         if (!response) {
           setproductData({
@@ -146,6 +174,8 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
             status: "",
             stock: 0,
             images: [],
+            attributes: [],
+            tags: [],
           });
           return null;
         }
@@ -153,8 +183,9 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
         setCategoryData(categoryResponse.data);
         setSizeData(sizeResponse.data);
         setBrandData(brandResponse.data);
+        setTagData(tagsResponse.data);
         productForm.reset(response.data, categoryResponse.data);
-        router.refresh()
+        router.refresh();
       } catch (error) {
         console.error("Error fetching store:", error);
       }
@@ -162,7 +193,7 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
 
     fetchData();
   }, []);
-  
+
   const defaultValuess = productData
     ? {
         ...productData,
@@ -179,6 +210,8 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
         status: "",
         brandId: "",
         categoryd: "",
+        attributes: {},
+        tags: [],
       };
 
   const productForm = useForm<ProductFormValues>({
@@ -186,15 +219,39 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
     defaultValues: defaultValuess,
   });
 
+  const addAttribute = () => {
+    setAttributes([...attributes, { name: "", value: "" }]);
+  };
+  const removeAttribute = (indexToRemove: number) => {
+    const updatedAttributes = attributes.filter(
+      (_, index) => index !== indexToRemove
+    );
+    setAttributes(updatedAttributes);
+  };
+
+  const handleTagToggle = (tagId: string) => {
+    if (selectedTags.includes(tagId)) {
+      setSelectedTags(selectedTags.filter((tag) => tag !== tagId));
+    } else {
+      setSelectedTags([...selectedTags, tagId]);
+      console.log(tagId)
+      console.log(selectedTags)
+    }
+  };
+
+
   const onSubmit = async (data: ProductFormValues) => {
     try {
       setLoading(true);
-      console.log(data);
+      console.log("data", data);
+      console.log("tags", selectedTags);
       if (productData) {
         await axios.patch(
           `http://localhost:3001/api/products/${params.storeId}/update/${params.productId}`,
           {
             ...data,
+            attributes: attributes,
+            tags: selectedTags,
             userId: userId,
           }
         );
@@ -203,6 +260,8 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
           `http://localhost:3001/api/products/${params.storeId}/create`,
           {
             ...data,
+            attributes: attributes,
+            // tags: selectedTags,
             userId: userId,
           }
         );
@@ -367,6 +426,74 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
                 </FormItem>
               )}
             />
+            {/* <div className="mb-4">
+              <label className="text-base">Tags</label>
+              <div>
+                {tagData.map((tag) => (
+                  <div
+                    key={tag.id}
+                    className="flex flex-row items-start space-x-3 space-y-0"
+                  >
+                    <input
+                      type="checkbox"
+                      name="tags"
+                      value={tag.id}
+                      checked={selectedTags.includes(tag.id)}
+                      onChange={() => handleTagToggle(tag.id)}
+                    />
+                    <label className="font-normal">{tag.name}</label>
+                  </div>
+                ))}
+              </div>
+            </div> */}
+            <FormField
+              control={productForm.control}
+              name="tags"
+              render={() => (
+                <FormItem>
+                  <div className="mb-4">
+                    <FormLabel className="text-base">Sidebar</FormLabel>
+                    <FormDescription>
+                      Select the tags that best describes your product.
+                    </FormDescription>
+                  </div>
+                  {tagData.map((tag) => (
+                    <FormField
+                      key={tag.id}
+                      control={productForm.control}
+                      name="tags"
+                      render={({ field }) => {
+                        return (
+                          <FormItem
+                            key={tag.id}
+                            className="flex flex-row items-start space-x-3 space-y-0"
+                          >
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value?.includes(tag.id)}
+                                onCheckedChange={(checked) => {
+                                  return checked
+                                    ? field.onChange([...field.value, tag.id])
+                                    : field.onChange(
+                                        field.value?.filter(
+                                          (value) => value !== tag.id
+                                        )
+                                      );
+                                }}
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              {tag.name}
+                            </FormLabel>
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  ))}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={productForm.control}
               name="name"
@@ -480,6 +607,70 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
                 </FormItem>
               )}
             />
+            {attributes.map((attribute, index) => (
+              <div key={index} className="grid grid-cols-2 gap-4 relative">
+                <h3>Attribute{index + 1}</h3>
+                <Button
+                  className="ml-44 p-1 bg-red-500 text-white rounded-full"
+                  variant="destructive"
+                  size="icon"
+                  type="button"
+                  onClick={() => removeAttribute(index)}
+                >
+                  X
+                </Button>
+                <FormField
+                  control={productForm.control}
+                  name={attribute.name as keyof ProductFormValues}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Label</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Attribute label"
+                          value={attribute.name}
+                          onChange={(e) => {
+                            const updatedAttributes = [...attributes];
+                            updatedAttributes[index].name = e.target.value;
+                            setAttributes(updatedAttributes);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={productForm.control}
+                  name={attribute.value as keyof ProductFormValues}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Value</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Attribute value"
+                          value={attribute.value}
+                          onChange={(e) => {
+                            const updatedAttributes = [...attributes];
+                            updatedAttributes[index].value = e.target.value;
+                            setAttributes(updatedAttributes);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            ))}
+            <Button
+              className="mx-auto my-auto"
+              size="sm"
+              type="button"
+              onClick={addAttribute}
+            >
+              Add Attribute
+            </Button>
           </div>
           <Button disabled={loading} className="ml-auto" type="submit">
             {action}

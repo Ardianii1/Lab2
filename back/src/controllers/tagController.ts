@@ -81,11 +81,6 @@ export const createTag = async (req:Request, res:Response) => {
         data: {
             name:name,
         storeId: storeId,
-        
-
-          
-          
-          
         },
       });
       res.json(tag);
@@ -97,7 +92,7 @@ export const createTag = async (req:Request, res:Response) => {
   
 export const patchTag = async (req:Request, res:Response) => {
     try {
-      console.log("[CREATE TAG]")
+      console.log("[Update TAG]")
       const { name, userId } = req.body;
       const { tagId, storeId } = req.params
       if (!userId) {
@@ -127,12 +122,11 @@ export const patchTag = async (req:Request, res:Response) => {
         },
         data: {
           name,
-          
         },
       });
       res.json(tag);
     } catch (error) {
-      console.error('Error updating category:', error);
+      console.error('Error updating tag:', error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
 }
