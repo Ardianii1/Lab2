@@ -16,12 +16,16 @@ export const getAllOrders = async (req:Request, res:Response) => {
         where:{
           storeId: storeId
         },
-        // include: {
-        //     billboard: true,
-        // },
-        // orderBy: {
-        //   createdAt: 'desc'
-        // }
+        include: {
+          orderItems: {
+            include:{
+              product:true
+            }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
       });
       res.json(orders);
   } catch (error) {

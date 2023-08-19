@@ -10,7 +10,7 @@ import { useState } from "react"
 import axios from "axios"
 import { useAuth } from "@clerk/nextjs"
 import { AlertModal } from "@/components/modals/alert-modal"
-import { tr } from "date-fns/locale"
+import Link from "next/link"
 
 interface CellActionProps{
     data: TagColumn
@@ -34,13 +34,11 @@ export const CellAction:React.FC<CellActionProps> = ({
     const onDelete = async() => {
         try {
             setLoading(true)
-            // console.log("deleting...")
             axios.delete(`http://localhost:3001/api/tags/${params.storeId}/delete/${data.id}`, {
                 data: {
                   userId: userId,
                 }
             })
-            // console.log("DELETEDD")
             router.push(`http://localhost:3000/${params.storeId}/tags`)
             router.refresh()
             toast.success("Tag Deleted successfuly")
@@ -55,32 +53,45 @@ export const CellAction:React.FC<CellActionProps> = ({
 
   return (
     <>
-    <AlertModal isOpen={open} loading={loading} onClose={()=> setOpen(false)} onConfirm={onDelete} />
-    <DropdownMenu>
+      <AlertModal
+        isOpen={open}
+        loading={loading}
+        onClose={() => setOpen(false)}
+        onConfirm={onDelete}
+      />
+      <DropdownMenu>
         <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open Menu</span>
-                <MoreHorizontal className="h-4 w-4"/>
-            </Button>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open Menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-            <DropdownMenuLabel>
-                Actions
-            </DropdownMenuLabel>
-            <DropdownMenuItem className="cursor-pointer" onClick={() => onCopy(data.id)}>
-                <Copy className="mr-2 h-4 w-4"/>
-                Copy Id
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => onCopy(data.id)}
+          >
+            <Copy className="mr-2 h-4 w-4" />
+            Copy Id
+          </DropdownMenuItem>
+          <Link
+            href={`http://localhost:3000/${params.storeId}/tags/${data.id}`}
+          >
+            <DropdownMenuItem className="cursor-pointer">
+              <Edit className="mr-2 h-4 w-4" />
+              Edit
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer" onClick={() => router.push(`http://localhost:3000/${params.storeId}/tags/${data.id}`)} >
-                <Edit className="mr-2 h-4 w-4"/>
-                Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer" onClick={()=> setOpen(true)}>
-                <Trash className="mr-2 h-4 w-4"/>
-                Delete
-            </DropdownMenuItem>
+          </Link>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => setOpen(true)}
+          >
+            <Trash className="mr-2 h-4 w-4" />
+            Delete
+          </DropdownMenuItem>
         </DropdownMenuContent>
-    </DropdownMenu>
+      </DropdownMenu>
     </>
-  )
+  );
 }

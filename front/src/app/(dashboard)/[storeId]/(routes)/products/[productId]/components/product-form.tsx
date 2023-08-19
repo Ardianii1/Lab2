@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Heading } from "./heading";
+import { Heading } from "@/components/ui/heading";
 import { Trash } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { z } from "zod";
@@ -125,9 +125,7 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
   const [sizeData, setSizeData] = useState<Size[] | []>([]);
   const [brandData, setBrandData] = useState<Brand[] | []>([]);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [attributes, setAttributes] = useState<Attribute[] | []>([
-    { name: "", value: "" },
-  ]);
+  const [attributes, setAttributes] = useState<Attribute[] | []>([{ name: "", value: "" },]);
   const [tagData, setTagData] = useState<Tag[] | []>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
@@ -229,17 +227,6 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
     setAttributes(updatedAttributes);
   };
 
-  const handleTagToggle = (tagId: string) => {
-    if (selectedTags.includes(tagId)) {
-      setSelectedTags(selectedTags.filter((tag) => tag !== tagId));
-    } else {
-      setSelectedTags([...selectedTags, tagId]);
-      console.log(tagId)
-      console.log(selectedTags)
-    }
-  };
-
-
   const onSubmit = async (data: ProductFormValues) => {
     try {
       setLoading(true);
@@ -251,7 +238,6 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
           {
             ...data,
             attributes: attributes,
-            tags: selectedTags,
             userId: userId,
           }
         );
@@ -261,7 +247,6 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
           {
             ...data,
             attributes: attributes,
-            // tags: selectedTags,
             userId: userId,
           }
         );

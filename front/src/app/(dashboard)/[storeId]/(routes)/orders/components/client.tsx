@@ -1,22 +1,32 @@
 "use client"
-import { Button } from "@/components/ui/button"
-import { Heading } from "../../settings/components/heading"
-import { Plus } from "lucide-react"
+import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator"
-import { useParams, useRouter } from "next/navigation"
+import { useParams} from "next/navigation"
 import { useEffect, useState } from "react"
 import axios from "axios"
+import { formatter } from "@/lib/utils";
 import { OrderColumn, columns } from "./columns"
 import { format } from "date-fns"
 import { DataTable } from "@/components/ui/data-table"
 
-interface Order {
-  id:string
+type OrderItem = {
+  id: string;
+  quantity: number;
+  product: {
+    id: string;
+    name: string;
+    price: number;
+}
+}
+type Order = {
+  id: string;
   phone: number;
   address: string;
+  orderItems: OrderItem[];
   totalPrice: number;
-  createdAt: Date
-}
+  isPaid:boolean;
+  createdAt: Date;
+};
 
 const OrderClient = () => {
   const [ordersData, setOrdersData] = useState<Order[] | []>([]); 
@@ -25,14 +35,13 @@ const OrderClient = () => {
   useEffect(() => {
       const fetchOrders = async () => {
         try {
-          const response = await axios.get(`http://localhost:3001/api/stores/${params.storeId}/orders/`);
+          const response = await axios.get(`http://localhost:3001/api/orders/${params.storeId}/all`);
           console.log(response)
   
           if (!response) {
               setOrdersData([])
               return null;
           }
-              // console.log(response.data)
           setOrdersData(response.data);
         } catch (error) {
           console.error('Error fetching store:', error);
@@ -41,45 +50,27 @@ const OrderClient = () => {
   
       fetchOrders();
     }, []);
-
-    const router = useRouter()
     const params = useParams()
-
-
-    const formattedOrders: OrderColumn[] = ordersData.map((item)=>({
+    
+    const formattedOrders: OrderColumn[] = ordersData.map((item) => ({
       id: item.id,
       phone: item.phone,
-      address:item.address,
-      totalPrice: item.totalPrice,
-      createdAt: item.createdAt //format(item.createdAt, "dd MM yyyy")
-    }))
+      address: item.address,
+      products: item.orderItems.map((orderItem) => orderItem.product.name).join(", "),
+      totalPrice: formatter.format(item.orderItems.reduce((total, item) => {
+          return total + Number(item.product.price);
+        }, 0)
+      ),
+      isPaid: item.isPaid,
+      createdAt: format(item.createdAt, "MMMM do, yyyy"),
+    }));
 
 
   return (
     <>
-        <div className="flex items-center justify-between">
-            <Heading
-                title={`Orders (${ordersData.length})`}
-                description="Manage orders for your store"
-            />
-            <Button onClick={() => router.push(`http://localhost:3000/${params.storeId}/orders/new`)} >
-                <Plus className="mr-2 h-4 w-4" />
-                Add New
-            </Button>
-        </div>
+        <Heading title={`Orders (${ordersData.length})`} description="Manage orders for your store"/>
         <Separator/>
-        <DataTable columns={columns} data={formattedOrders} searchKey="order" />
-        
-        
-        
-        {/* <div>
-            { ordersData.map((order) => (
-                <div key={order.label}>
-                    <p>label: {order.label}</p>
-                    <p>id: {order.id}</p>
-                </div>
-            ))}
-        </div> */}
+        <DataTable columns={columns} data={formattedOrders} searchKey="products" />
     </>
   )
 }

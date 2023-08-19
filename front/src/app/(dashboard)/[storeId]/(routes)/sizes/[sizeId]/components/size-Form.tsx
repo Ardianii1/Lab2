@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { Heading } from "./heading";
+import { Heading } from "@/components/ui/heading";
 import { Trash } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { z } from "zod";
@@ -16,8 +16,6 @@ import { useParams } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { AlertModal } from "@/components/modals/alert-modal";
-import { ApiAlert } from "@/components/ui/api-alert";
-import ImageUpload from "@/components/ui/image-upload";
 
 interface Size {
     id: string;
@@ -55,13 +53,10 @@ export const SizeForm:React.FC<SizeFormProps> = () =>{
     const fetchData = async () => {
       try {
         const response = await axios.get(`http://localhost:3001/api/sizes/${params.sizeId}`);
-        // console.log(response)
-
         if (!response) {
             setSizeData({})
             return null;
         }
-            // console.log(response.data)
         setSizeData(response.data);
         form.reset(response.data)
       } catch (error) {
@@ -169,8 +164,6 @@ export const SizeForm:React.FC<SizeFormProps> = () =>{
                     </Button>
                 </form>
             </Form>
-            {/* <Separator/>
-            <ApiAlert title="test" description="test" variant="public"/> */}
         </>
     )
 } 

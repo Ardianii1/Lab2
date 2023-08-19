@@ -1,4 +1,3 @@
-import React from "react";
 import ProductClient from "./components/client";
 
 const SizePage = () => {

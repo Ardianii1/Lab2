@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { Heading } from "./heading";
+import { Heading } from "@/components/ui/heading";
 import { Trash } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { z } from "zod";
@@ -52,7 +52,7 @@ export const SettingsForm:React.FC<SettingsFormProps> = () =>{
         });
             // console.log(response.data)
         setStoreData(response.data);
-        form.reset(response.data) // Assuming the response data is an object representing the store
+        form.reset(response.data) 
       } catch (error) {
         console.error('Error fetching store:', error);
       }
@@ -63,7 +63,7 @@ export const SettingsForm:React.FC<SettingsFormProps> = () =>{
 
   const form = useForm<SettingFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {  } // Use storeData.name as the default value for the form field
+    defaultValues: {  } 
   });
     
     const onSubmit = async (data: SettingFormValues) => {
@@ -134,8 +134,6 @@ export const SettingsForm:React.FC<SettingsFormProps> = () =>{
                     </Button>
                 </form>
             </Form>
-            {/* <Separator/>
-            <ApiAlert title="test" description="test" variant="public"/> */}
         </>
     )
 } 

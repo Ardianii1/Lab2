@@ -1,14 +1,14 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Heading } from "../../settings/components/heading";
 import { Plus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useParams, useRouter } from "next/navigation";
+import { useParams,} from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { BrandColumn, columns } from "./columns";
-import { format } from "date-fns";
 import { DataTable } from "@/components/ui/data-table";
+import Link from "next/link";
+import { Heading } from "@/components/ui/heading";
 
 interface brand {
   id: string;
@@ -32,7 +32,6 @@ const BrandClient = () => {
           setbrandsData([]);
           return null;
         }
-        // console.log(response.data)
         setbrandsData(response.data);
       } catch (error) {
         console.error("Error fetching store:", error);
@@ -42,7 +41,6 @@ const BrandClient = () => {
     fetchbrands();
   }, []);
 
-  const router = useRouter();
   const params = useParams();
 
   const formattedbrands: BrandColumn[] = brandsData.map((item) => ({
@@ -55,29 +53,20 @@ const BrandClient = () => {
     <>
       <div className="flex items-center justify-between">
         <Heading
-          title={`brands (${brandsData.length})`}
+          title={`Brands (${brandsData.length})`}
           description="Manage brands for your store"
         />
-        <Button
-          onClick={() =>
-            router.push(`http://localhost:3000/${params.storeId}/brands/new`)
-          }
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add New
-        </Button>
+        <Link href={`http://localhost:3000/${params.storeId}/brands/new`}>
+          <Button asChild>
+            <div>
+              <Plus className="mr-2 h-4 w-4" />
+              Add new
+            </div>
+          </Button>
+        </Link>
       </div>
       <Separator />
       <DataTable columns={columns} data={formattedbrands} searchKey="name" />
-
-      {/* <div>
-            { billboardsData.map((billboard) => (
-                <div key={billboard.label}>
-                    <p>label: {billboard.label}</p>
-                    <p>id: {billboard.id}</p>
-                </div>
-            ))}
-        </div> */}
     </>
   );
 };

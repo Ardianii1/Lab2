@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { Heading } from "./heading";
+import { Heading } from "@/components/ui/heading";
 import { Trash } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { z } from "zod";
@@ -16,9 +16,6 @@ import { useParams } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { AlertModal } from "@/components/modals/alert-modal";
-import { ApiAlert } from "@/components/ui/api-alert";
-import ImageUpload from "@/components/ui/image-upload";
-
 interface Tag {
     id: string;
     name:string;
@@ -55,13 +52,11 @@ export const TagForm:React.FC<TagFormProps> = () =>{
     const fetchData = async () => {
       try {
         const response = await axios.get(`http://localhost:3001/api/tags/${params.tagId}`);
-        // console.log(response)
 
         if (!response) {
             setTagData({})
             return null;
         }
-            // console.log(response.data)
         setTagData(response.data);
         form.reset(response.data)
       } catch (error) {
@@ -138,7 +133,6 @@ export const TagForm:React.FC<TagFormProps> = () =>{
                 )} 
             </div>
             <Separator />
-
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
                     <div className="grid grid-cols-3 gap-8">
@@ -152,16 +146,12 @@ export const TagForm:React.FC<TagFormProps> = () =>{
                                 <FormMessage/>
                             </FormItem>
                         )}/>
-                      
-                        
                     </div>
                     <Button disabled={loading} className="ml-auto" type="submit">
                         {action}
                     </Button>
                 </form>
             </Form>
-            {/* <Separator/>
-            <ApiAlert title="test" description="test" variant="public"/> */}
         </>
     )
 } 

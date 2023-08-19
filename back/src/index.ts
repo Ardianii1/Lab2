@@ -6,7 +6,8 @@ import brandRoutes from "./routes/brandRoutes.js"
 import reviewRoutes from "./routes/reviewRoutes.js"
 import productRoutes from "./routes/productRoutes.js"
 import tagRoutes from "./routes/tagRoutes.js"
-// import billboardRoutes from "./routes/billboardRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js"
+import billboardRoutes from "./routes/billboardRoutes.js";
 import cors from 'cors';
 import {
   ClerkExpressRequireAuth,
@@ -29,13 +30,14 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Hello, world!');
 });
 app.use('/api/stores',storeRoutes);
-// app.use('/api/billboards',billboardRoutes);
+app.use('/api/billboards',billboardRoutes);
 app.use('/api/categories', categoryRoutes)
 app.use('/api/sizes', sizeRoutes)
 app.use('/api/brands', brandRoutes)
 app.use('/api/reviews', reviewRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/tags', tagRoutes)
+app.use('/api/orders', orderRoutes)
 app.listen(port, () => {
   console.log(`Server is running on port http://localhost:${port}`);
 });

@@ -16,7 +16,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useAuth } from "@clerk/nextjs";
 import { AlertModal } from "@/components/modals/alert-modal";
-import { tr } from "date-fns/locale";
+import Link from "next/link";
 
 interface CellActionProps {
   data: ReviewColumn;
@@ -37,7 +37,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const onDelete = async () => {
     try {
       setLoading(true);
-      // console.log("deleting...")
       axios.delete(
         `http://localhost:3001/api/reviews/${params.storeId}/delete/${data.id}`,
         {
@@ -46,7 +45,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           },
         }
       );
-      // console.log("DELETEDD")
       router.push(`http://localhost:3000/${params.storeId}/reviews`);
       router.refresh();
       toast.success("Review Deleted successfuly");
@@ -82,17 +80,14 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
             <Copy className="mr-2 h-4 w-4" />
             Copy Id
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() =>
-              router.push(
-                `http://localhost:3000/${params.storeId}/reviews/${data.id}`
-              )
-            }
+          <Link
+            href={`http://localhost:3000/${params.storeId}/reviews/${data.id}`}
           >
-            <Edit className="mr-2 h-4 w-4" />
-            Edit
-          </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              <Edit className="mr-2 h-4 w-4" />
+              Edit
+            </DropdownMenuItem>
+          </Link>
           <DropdownMenuItem
             className="cursor-pointer"
             onClick={() => setOpen(true)}

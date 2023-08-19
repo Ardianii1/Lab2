@@ -20,7 +20,6 @@ export default async function DashboardLayout({
         userId: userId,
       },
     } )
-    // console.log(store)
     if (!store) {
         redirect('/');
       };

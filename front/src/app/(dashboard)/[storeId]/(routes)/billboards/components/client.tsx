@@ -1,14 +1,14 @@
 "use client"
 import { Button } from "@/components/ui/button"
-import { Heading } from "../../settings/components/heading"
+import { Heading } from "@/components/ui/heading";
 import { Plus } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
-import { useParams, useRouter } from "next/navigation"
+import { useParams,} from "next/navigation"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { BillboardColumn, columns } from "./columns"
-import { format } from "date-fns"
 import { DataTable } from "@/components/ui/data-table"
+import Link from "next/link"
 
 interface Billboard {
   id:string
@@ -24,7 +24,9 @@ const BillboardClient = () => {
   useEffect(() => {
       const fetchBillboards = async () => {
         try {
-          const response = await axios.get(`http://localhost:3001/api/stores/${params.storeId}/billboards/`);
+          const response = await axios.get(
+            `http://localhost:3001/api/billboards/${params.storeId}/all`
+          );
           console.log(response)
   
           if (!response) {
@@ -41,7 +43,6 @@ const BillboardClient = () => {
       fetchBillboards();
     }, []);
 
-    const router = useRouter()
     const params = useParams()
 
 
@@ -54,31 +55,28 @@ const BillboardClient = () => {
 
   return (
     <>
-        <div className="flex items-center justify-between">
-            <Heading
-                title={`Billboards (${billboardsData.length})`}
-                description="Manage billboards for your store"
-            />
-            <Button onClick={() => router.push(`http://localhost:3000/${params.storeId}/billboards/new`)} >
-                <Plus className="mr-2 h-4 w-4" />
-                Add New
-            </Button>
-        </div>
-        <Separator/>
-        <DataTable columns={columns} data={formattedBillboards} searchKey="label" />
-        
-        
-        
-        {/* <div>
-            { billboardsData.map((billboard) => (
-                <div key={billboard.label}>
-                    <p>label: {billboard.label}</p>
-                    <p>id: {billboard.id}</p>
-                </div>
-            ))}
-        </div> */}
+      <div className="flex items-center justify-between">
+        <Heading
+          title={`Billboards (${billboardsData.length})`}
+          description="Manage billboards for your store"
+        />
+        <Link href={`http://localhost:3000/${params.storeId}/billboards/new`}>
+          <Button asChild>
+            <div>
+              <Plus className="mr-2 h-4 w-4" />
+              Add new
+            </div>
+          </Button>
+        </Link>
+      </div>
+      <Separator />
+      <DataTable
+        columns={columns}
+        data={formattedBillboards}
+        searchKey="label"
+      />
     </>
-  )
+  );
 }
 
 export default BillboardClient

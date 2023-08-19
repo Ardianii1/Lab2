@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { Heading } from "./heading";
+import { Heading } from "@/components/ui/heading";
 import { Trash } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { z } from "zod";
@@ -59,7 +59,9 @@ export const CategoryForm:React.FC<CategoryFormProps> = () =>{
       try {
         console.log(params.storeId)
           const response = await axios.get(`http://localhost:3001/api/categories/${params.categoryId}`);
-          const billboardResponse = await axios.get(`http://localhost:3001/api/stores/${params.storeId}/billboards`);
+          const billboardResponse = await axios.get(
+            `http://localhost:3001/api/billboards/${params.storeId}/all`
+          );
           // console.log(response)
 
         if (!response) {
@@ -70,6 +72,7 @@ export const CategoryForm:React.FC<CategoryFormProps> = () =>{
             setBillboardData([])
             return null;
         }
+        form.reset(response.data,billboardResponse.data)
             // console.log(response.data)
             setCategoryData(response.data);
             setBillboardData(billboardResponse.data);
@@ -194,8 +197,6 @@ export const CategoryForm:React.FC<CategoryFormProps> = () =>{
                     </Button>
                 </form>
             </Form>
-            {/* <Separator/>
-            <ApiAlert title="test" description="test" variant="public"/> */}
         </>
     )
 } 

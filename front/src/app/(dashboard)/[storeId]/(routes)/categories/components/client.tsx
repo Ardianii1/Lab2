@@ -1,14 +1,14 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Heading } from "../../settings/components/heading";
+import { Heading } from "@/components/ui/heading";
 import { Plus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useParams, useRouter } from "next/navigation";
+import { useParams} from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { CategoryColumn, columns } from "./columns";
-import { format } from "date-fns";
 import { DataTable } from "@/components/ui/data-table";
+import Link from "next/link";
 
 interface Categories {
   id: string;
@@ -35,7 +35,6 @@ const CategoryClient = () => {
           setCategoriesData([]);
           return null;
         }
-        // console.log(response.data)
         setCategoriesData(response.data);
       } catch (error) {
         console.error("Error fetching store:", error);
@@ -45,19 +44,18 @@ const CategoryClient = () => {
     fetchCategories();
   }, []);
 
-  const router = useRouter();
   const params = useParams();
 
   const fetchBillboardLabel = async (billboardId: string): Promise<string> => {
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/stores/billboards/${billboardId}`
+        `http://localhost:3001/api/billboards/${billboardId}`
       );
 
       if (response && response.data && response.data.label) {
         return response.data.label;
       }
-      return "N/A"; // Return a default label if billboard data not found
+      return "N/A";
     } catch (error) {
       console.error("Error fetching billboard:", error);
       return "N/A";
@@ -93,13 +91,6 @@ const CategoryClient = () => {
     updateBillboardLabels();
   }, [categoriesData]);
 
-  // const formattedCategories: CategoryColumn[] = categoriesData.map((item) => ({
-  //   id: item.id,
-  //   name: item.name,
-  //   billboardId: item.billboardId,
-  //   createdAt: item.createdAt,
-  // }));
-
   return (
     <>
       <div className="flex items-center justify-between">
@@ -107,16 +98,14 @@ const CategoryClient = () => {
           title={`Categories (${categoriesData.length})`}
           description="Manage categories for your store"
         />
-        <Button
-          onClick={() =>
-            router.push(
-              `http://localhost:3000/${params.storeId}/categories/new`
-            )
-          }
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add New
-        </Button>
+        <Link href={`http://localhost:3000/${params.storeId}/categories/new`}>
+          <Button asChild>
+            <div>
+              <Plus className="mr-2 h-4 w-4" />
+              Add new
+            </div>
+          </Button>
+        </Link>
       </div>
       <Separator />
       <DataTable

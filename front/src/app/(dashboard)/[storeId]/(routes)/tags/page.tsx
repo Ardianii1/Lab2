@@ -1,4 +1,3 @@
-import React from 'react'
 import TagClient from './components/client'
 
 const TagPage = () => {

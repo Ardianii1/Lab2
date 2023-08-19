@@ -1,14 +1,14 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Heading } from "../../settings/components/heading";
+import { Heading } from "@/components/ui/heading";
 import { Plus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useParams, useRouter } from "next/navigation";
+import { useParams} from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { ReviewColumn, columns } from "./columns";
-import { format } from "date-fns";
 import { DataTable } from "@/components/ui/data-table";
+import Link from "next/link";
 
 interface review {
   id: string;
@@ -43,7 +43,6 @@ const ReviewClient = () => {
     fetchreviews();
   }, []);
 
-  const router = useRouter();
   const params = useParams();
 
   const formattedreviews: ReviewColumn[] = reviewsData.map((item) => ({
@@ -58,29 +57,20 @@ const ReviewClient = () => {
     <>
       <div className="flex items-center justify-between">
         <Heading
-          title={`reviews (${reviewsData.length})`}
+          title={`Reviews (${reviewsData.length})`}
           description="Manage reviews for your store"
         />
-        <Button
-          onClick={() =>
-            router.push(`http://localhost:3000/${params.storeId}/reviews/new`)
-          }
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add New
-        </Button>
+        <Link href={`http://localhost:3000/${params.storeId}/reviews/new`}>
+          <Button asChild>
+            <div>
+              <Plus className="mr-2 h-4 w-4" />
+              Add new
+            </div>
+          </Button>
+        </Link>
       </div>
       <Separator />
       <DataTable columns={columns} data={formattedreviews} searchKey="title" />
-
-      {/* <div>
-            { billboardsData.map((billboard) => (
-                <div key={billboard.label}>
-                    <p>label: {billboard.label}</p>
-                    <p>id: {billboard.id}</p>
-                </div>
-            ))}
-        </div> */}
     </>
   );
 };

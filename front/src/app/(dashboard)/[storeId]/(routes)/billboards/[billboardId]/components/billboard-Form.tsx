@@ -1,7 +1,6 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { Heading } from "./heading";
 import { Trash } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { z } from "zod";
@@ -16,8 +15,8 @@ import { useParams } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { AlertModal } from "@/components/modals/alert-modal";
-import { ApiAlert } from "@/components/ui/api-alert";
 import ImageUpload from "@/components/ui/image-upload";
+import { Heading } from "@/components/ui/heading";
 
 interface Billboard {
     label: string;
@@ -52,14 +51,11 @@ export const BillboardForm:React.FC<BillboardFormProps> = () =>{
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/api/stores/billboards/${params.billboardId}`);
-        // console.log(response)
-
+        const response = await axios.get(`http://localhost:3001/api/billboards/${params.billboardId}`);
         if (!response) {
             setBillboardData({})
             return null;
         }
-            // console.log(response.data)
         setBillboardData(response.data);
         form.reset(response.data)
       } catch (error) {
@@ -81,12 +77,12 @@ export const BillboardForm:React.FC<BillboardFormProps> = () =>{
             console.log(data)
 
             if (billboardData) {
-               await axios.patch(`http://localhost:3001/api/stores/${params.storeId}/billboards/${params.billboardId}`, {
+               await axios.patch(`http://localhost:3001/api/billboards/${params.storeId}/update/${params.billboardId}`, {
                     ...data,
                     userId: userId,
                   })
             }else{
-                await axios.post(`http://localhost:3001/api/stores/${params.storeId}/billboards/create`, {
+                await axios.post(`http://localhost:3001/api/billboards/${params.storeId}/create`, {
                     ...data,
                     userId: userId,
                 })
@@ -106,7 +102,7 @@ export const BillboardForm:React.FC<BillboardFormProps> = () =>{
         try {
             setLoading(true)
             console.log("deleting...")
-            axios.delete(`http://localhost:3001/api/stores/${params.storeId}/billboards/${params.billboardId}`, {
+            axios.delete(`http://localhost:3001/api/billboards/${params.storeId}/delete/${params.billboardId}`, {
                 data: {
                   userId: userId,
                 }
@@ -172,8 +168,6 @@ export const BillboardForm:React.FC<BillboardFormProps> = () =>{
                     </Button>
                 </form>
             </Form>
-            {/* <Separator/>
-            <ApiAlert title="test" description="test" variant="public"/> */}
         </>
     )
 } 

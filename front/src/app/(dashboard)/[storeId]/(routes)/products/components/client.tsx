@@ -1,16 +1,16 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Heading } from "../../settings/components/heading";
+import { Heading } from "@/components/ui/heading";
 import { Plus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { ProductColumn, columns } from "./columns";
-import { format } from "date-fns";
 import { DataTable } from "@/components/ui/data-table";
+import Link from "next/link";
 
-interface Product {
+type Product ={
   id: string;
   name: string;
   description: string;
@@ -91,12 +91,12 @@ const ProductClient = () => {
           productsData.map((item) => ({
             id: item.id,
             name: item.name,
-            // createdAt: item.createdAt,
             status: item.status,
             price:item.price,
             categoryId: item.categoryId,
             category: categoryLabels[item.id],
             brand: brandLabels[item.id],
+            brandId:item.brandId
           }))
         );
       }
@@ -130,37 +130,6 @@ const ProductClient = () => {
     }
     return brandLabels;
   };
-
-  // useEffect(() => {
-  //   const updateBrandLabels = async () => {
-  //     if (productsData.length > 0) {
-  //       const brandLabels = await fetchBrandLabelsForCategories();
-  //       setFormattedProducts(
-  //         productsData.map((item) => ({
-  //           id: item.id,
-  //           name: item.name,
-  //           brandId: item.brandId,
-  //           createdAt: item.createdAt,
-  //           brand: brandLabels[item.id],
-  //           status:item.status
-  //           // categoryId: item.categoryId,
-  //           // category: brandLabels[item.id],
-  //         }))
-  //       );
-  //     }
-  //   };
-  //   updateBrandLabels();
-  // }, [productsData]);
-
-  // const formattedproducts: ProductColumn[] = productsData.map((item) => ({
-  //   id: item.id,
-  //   name: item.name,
-  //   desctiption: item.description,
-  //   price:item.price,
-  //   status: item.status,
-  //   createdAt: item.createdAt, //format(item.createdAt, "dd MM yyyy")
-  // }));
-
   return (
     <>
       <div className="flex items-center justify-between">
@@ -168,14 +137,14 @@ const ProductClient = () => {
           title={`Products (${productsData.length})`}
           description="Manage products for your store"
         />
-        <Button
-          onClick={() =>
-            router.push(`http://localhost:3000/${params.storeId}/products/new`)
-          }
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add New
-        </Button>
+        <Link href={`http://localhost:3000/${params.storeId}/products/new`}>
+          <Button asChild>
+            <div>
+              <Plus className="mr-2 h-4 w-4" />
+              Add new
+            </div>
+          </Button>
+        </Link>
       </div>
       <Separator />
       <DataTable columns={columns} data={formattedProducts} searchKey="name" />

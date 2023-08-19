@@ -1,4 +1,3 @@
-import React from 'react'
 import SizeClient from './components/client'
 
 const SizePage = () => {
