@@ -2,6 +2,7 @@ import React from 'react'
 import { usePathname } from "next/navigation"
 import { cn } from '@/lib/utils';
 import { Category } from '@/types';
+import Link from "next/link";
 
 
 interface MainNavProps {
