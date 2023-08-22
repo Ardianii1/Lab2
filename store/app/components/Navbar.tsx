@@ -1,11 +1,12 @@
-import React from 'react'
 import Container from './ui/container'
 import Link from "next/link";
 import MainNav from './main-nav';
 import getCategories from '@/actions/get-categories';
 import NavbarActions from './navbar-actions';
 
-const Navbar= async () => {
+export const revalidate = 0
+
+const Navbar = async() => {
   const categories = await getCategories();
 
   return (
@@ -22,3 +23,4 @@ const Navbar= async () => {
       </div>
   )
 }
+export default Navbar

@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 import { signOut, useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import Container from "../components/ui/container";
@@ -11,8 +11,10 @@ export const revalidate = 0;
 
 
 const HomePage = async () => {
-  const products = await getProducts({ isFeatured: true});
-  const billboard= await getBillboard()
+  const products = await getProducts({
+    categoryId: "261336e3-c98d-4aba-b569-9e011fe62cd1",
+  });
+  const billboard = await getBillboard("5af49dfa-872b-43aa-ad29-6c19c86ec49d");
   return (
     <Container>
       <div className="sapce-y-10 pb-10">
