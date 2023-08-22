@@ -25,12 +25,12 @@ export const getStoreId = async (req:Request, res:Response) => {
 
   try {
     const { storeId } = req.params
-    const { userId } = req.query
+    // const { userId } = req.query
     // console.log("STORE ID",storeId)
     // console.log("USER ID",userId)
-    if (!userId || typeof userId !== "string") {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
+    // if (!userId || typeof userId !== "string") {
+    //   return res.status(401).json({ message: 'Unauthorized' });
+    // }
 
     const store = await prismadb.store.findFirst({
       where:{

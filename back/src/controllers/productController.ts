@@ -1,11 +1,15 @@
 import { Request, Response } from "express";
 import prismadb from "../lib/prismadb.js";
+import { URL } from "url";
 
 export const getAllProducts = async (req: Request, res: Response) => {
   console.log("ALL PRODUCTS HIT");
 
   try {
     const { storeId } = req.params;
+    const { searchParams } = new URL("http://localhost:3000/api/" + req.url);
+    const categoryId = searchParams.get("categoryId") || undefined;
+    const sizeId = searchParams.get("sizeId") || undefined;
     if (!storeId) {
       return res.status(400).json({ message: "StoreId is required" });
     }
@@ -13,11 +17,15 @@ export const getAllProducts = async (req: Request, res: Response) => {
     const products = await prismadb.product.findMany({
       where: {
         storeId: storeId,
+        categoryId,
+        sizeId,
       },
       include: {
-        tags:true,
-      //   images: true,
-      //   attributes: true,
+        tags: true,
+        category:true,
+        size:true,
+        images: true,
+        attributes: true,
       },
     });
     res.json(products);

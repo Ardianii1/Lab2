@@ -16,9 +16,9 @@ export const getAllCateogries = async (req:Request, res:Response) => {
         where:{
           storeId: storeId
         },
-        // include: {
-        //     billboard: true,
-        // },
+        include: {
+            billboard: true,
+        },
         // orderBy: {
         //   createdAt: 'desc'
         // }

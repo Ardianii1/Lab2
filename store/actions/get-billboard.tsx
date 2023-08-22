@@ -1,6 +1,6 @@
 import { Billboard } from "@/types";
 
-const URL= `${process.env.NEXT_PUBLIC_API_URL}/billboards`;
+const URL = `http://localhost:3001/api/billboards`;
 
 const getBillboards= async (id: string): Promise<Billboard> => {
     const res= await fetch(`${URL}/${id}`);
