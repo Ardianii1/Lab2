@@ -62,7 +62,7 @@ const OrderClient = () => {
         }, 0)
       ),
       isPaid: item.isPaid,
-      createdAt: format(item.createdAt, "MMMM do, yyyy"),
+      createdAt: item.createdAt,//format(item.createdAt, "MMMM do, yyyy"),
     }));
 
 

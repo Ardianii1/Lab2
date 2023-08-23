@@ -29,6 +29,7 @@ const CategoryPage: React.FC<CategoryPageProps> = async ({
   });
   const sizes = await getSizes();
   const category = await getCategory(params.categoryId);
+  console.log(category);
   return (
     <div className="bg-white">
       <Container>
@@ -42,12 +43,12 @@ const CategoryPage: React.FC<CategoryPageProps> = async ({
             <div className="mt-6 lg:col-span-4 lg:mt-0">
               {products.length === 0 && <NoResults />}
             </div>
+          </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {products.map((item) => (
                 <ProductCard key={item.id} data={item} />
               ))}
             </div>
-          </div>
         </div>
       </Container>
     </div>

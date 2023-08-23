@@ -8,11 +8,9 @@ import productRoutes from "./routes/productRoutes.js"
 import tagRoutes from "./routes/tagRoutes.js"
 import orderRoutes from "./routes/orderRoutes.js"
 import billboardRoutes from "./routes/billboardRoutes.js";
+import checkoutRoutes from "./routes/checkoutRoutes.js";
 import cors from 'cors';
-import {
-  ClerkExpressRequireAuth,
-  RequireAuthProp,
-  StrictAuthProp,
+import {StrictAuthProp,
 } from '@clerk/clerk-sdk-node';
 
 const port = 3001;
@@ -22,10 +20,10 @@ declare global {
     interface Request extends StrictAuthProp {}
   }
 }
+
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello, world!');
 });
@@ -38,6 +36,7 @@ app.use('/api/reviews', reviewRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/tags', tagRoutes)
 app.use('/api/orders', orderRoutes)
+app.use("/api/checkout",checkoutRoutes);
 app.listen(port, () => {
   console.log(`Server is running on port http://localhost:${port}`);
 });

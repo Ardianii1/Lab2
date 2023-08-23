@@ -251,6 +251,7 @@ export const patchProduct = async (req: Request, res: Response) => {
       data: {
         name,
         price,
+        stock,
         categoryId,
         brandId,
         sizeId,

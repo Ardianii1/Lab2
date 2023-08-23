@@ -1,4 +1,4 @@
-import React from 'react'
+"use client"
 import { usePathname } from "next/navigation"
 import { cn } from '@/lib/utils';
 import { Category } from '@/types';
@@ -15,7 +15,6 @@ const  MainNav: React.FC<MainNavProps> = ({
     const pathname= usePathname();
 
     const routes = data.map((route) => ({
-
         href: `/category/${route.id}`,
         label: route.name ,
         active:pathname === `/category/${route.id}`
@@ -30,13 +29,11 @@ const  MainNav: React.FC<MainNavProps> = ({
         className={cn(
             "text-sm font-medium transition-colors hover:text-black",
             route.active ? "text-black" : "text-neutral-500"
-        )}
-        
-        >
+        )}>
 
             {route.label}
        </Link>
-       ))};
+       ))}
 
     </nav>
   );

@@ -43,6 +43,9 @@ export const getCategoryId = async (req:Request, res:Response) => {
         where:{
           id: categoryId
         },
+        include:{
+          billboard: true,
+        }
       });
       res.json(category);
     } catch (error) {
