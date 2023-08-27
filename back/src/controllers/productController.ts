@@ -4,7 +4,6 @@ import { URL } from "url";
 
 export const getAllProducts = async (req: Request, res: Response) => {
   console.log("ALL PRODUCTS HIT");
-
   try {
     const { storeId } = req.params;
     const { searchParams } = new URL("http://localhost:3000/api/" + req.url);
@@ -34,6 +33,42 @@ export const getAllProducts = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+export const getAllStockProducts = async (req:Request, res:Response)=>{
+  console.log("ALL STOCK PRODUCTS HIT");
+  try {
+    const { storeId } = req.params;
+    const { searchParams } = new URL("http://localhost:3000/api/" + req.url);
+    const categoryId = searchParams.get("categoryId") || undefined;
+    const sizeId = searchParams.get("sizeId") || undefined;
+    const stockQueryParam = searchParams.get("stock");
+    if (!storeId) {
+      return res.status(400).json({ message: "StoreId is required" });
+    }
+
+     const stockCondition = stockQueryParam === "true" ? { gt: 0 } : undefined;
+
+    const products = await prismadb.product.findMany({
+      where: {
+        storeId: storeId,
+        categoryId,
+        sizeId,
+        stock: stockCondition,
+      },
+      include: {
+        tags: true,
+        category: true,
+        size: true,
+        images: true,
+        attributes: true,
+      },
+    });
+    res.json(products);
+  } catch (error) {
+    console.error("Error getting all products:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
 
 export const getProductId = async (req: Request, res: Response) => {
   console.log("productID HIT");

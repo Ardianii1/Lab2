@@ -1,21 +1,23 @@
 "use client";
 
 import Image from "next/image";
-import { toast } from "react-hot-toast";
 import { X } from "lucide-react";
 import IconButton from "@/app/components/ui/icon-button";
 import useCart from "@/hooks/use-cart";
 import Currency from "@/app/components/ui/currency";
 import { Product } from "@/types";
+import { useSession } from "next-auth/react";
 
 interface CartItemProps {
   data: Product;
 }
 
 const Cartitem: React.FC<CartItemProps> = ({ data }) => {
+  const session = useSession();
   const cart = useCart();
+
 const onRemove = () => {
-    cart.removeItem(data.id)
+    cart.removeItem(data.id,session?.data?.user?.email)
 }
   return (
     <li className="flex py-6 border-b">

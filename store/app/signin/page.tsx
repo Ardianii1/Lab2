@@ -1,5 +1,5 @@
 "use client";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -7,6 +7,11 @@ export default function Signin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const { data: session } = useSession();
+
+  if (session) {
+    return <p className="text-center">You are already signed in as {session?.user?.email}</p>;
+  }
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -87,6 +92,19 @@ export default function Signin() {
                 className="disabled:opacity-40 flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
               >
                 Sign in
+              </button>
+            </div>
+            <div>
+              <button
+                onClick={async () => {
+                  const result = await signIn("google");
+                  if (result) {
+                    router.push("/");
+                  }
+                }}
+                className="flex w-full justify-center rounded-md bg-white/5 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+              >
+                Sign in with Google
               </button>
             </div>
           </div>

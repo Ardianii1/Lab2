@@ -2,12 +2,12 @@ import { Product } from "@/types";
 
 import qs from "query-string";
 
-const URL = `http://localhost:3001/api/products/c6fb75eb-9c87-4e21-b25f-f0ef0dbb212d/all`;
+const URL = `http://localhost:3001/api/products/c6fb75eb-9c87-4e21-b25f-f0ef0dbb212d/allStock`;
 
 interface Query {
   categoryId?: string;
   sizeId?: string;
-  // stock?: boolean;
+  stock?: boolean;
 }
 
 const getProducts = async (query: Query): Promise<Product[]> => {
@@ -16,10 +16,9 @@ const getProducts = async (query: Query): Promise<Product[]> => {
     query: {
       categoryId: query.categoryId,
       sizeId: query.sizeId,
-      // stock: query.stock,
+      stock: query.stock,
     },
   });
-  console.log(url);
   const res = await fetch(url);
 
   return res.json();

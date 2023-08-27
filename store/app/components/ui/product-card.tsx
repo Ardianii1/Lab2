@@ -4,11 +4,11 @@ import { Product } from "@/types";
 import IconButton from "./icon-button";
 import { ShoppingCart, Expand } from "lucide-react";
 import Currency from "./currency";
-import { MouseEventHandler, use } from "react";
+import { MouseEventHandler } from "react";
 import { useRouter} from "next/navigation"
 import usePreviewModal from "@/hooks/use-preview-modal";
 import useCart from "@/hooks/use-cart";
-
+import {useSession } from "next-auth/react";
 interface ProductCard {
     data: Product;
 }
@@ -16,12 +16,13 @@ interface ProductCard {
 const ProductCard: React.FC<ProductCard> = ({
     data
 }) => {
+    const session = useSession(); 
     const cart = useCart()
     const previewModal = usePreviewModal()
     const router = useRouter()
+
     const handleClick = () => {
         router.push(`/product/${data?.id}`)
-    
     }
 
     const onPreview: MouseEventHandler<HTMLButtonElement> = (event) =>{
@@ -30,12 +31,15 @@ const ProductCard: React.FC<ProductCard> = ({
     }
     const onAddToCart: MouseEventHandler<HTMLButtonElement> = (event) =>{
         event.stopPropagation();
-        cart.addItem(data)
+        if (session?.data?.user) {
+          cart.addItem(data,session?.data.user.email);
+        } else {
+          router.push("/signin");
+        }
     }
 
     return (
         <div onClick={handleClick} className="bg-white group cursor-pointer rounded-xl border p-3 space-y-4">
-            {/*Images and Actions */}
            <div className="aspect-square rounded-xl bg-gray-100 relative">
             <Image 
             src={data?.images?.[0]?.url}
@@ -57,7 +61,6 @@ const ProductCard: React.FC<ProductCard> = ({
             </div>
 
            </div>
-           {/*Description */}
            <div>
             <p className="font-semi-bold text-lg">
                 {data.name}
@@ -66,7 +69,6 @@ const ProductCard: React.FC<ProductCard> = ({
                  {data.category?.name}
             </p>
            </div>
-           {/*Price */}
            <div className="felx items-center justify-between">
             <Currency value={data?.price}/>
            </div>

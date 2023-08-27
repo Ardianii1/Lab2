@@ -5,12 +5,30 @@ import useCart from "@/hooks/use-cart";
 import { useEffect, useState } from "react";
 import Cartitem from "./components/cart-item";
 import Summary from "./components/summary";
+import { useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 
 export const revalidate = 0;
 
 const CartPage = () => {
   const [isMounted, setIsMounted] = useState(false);
+  const searchParams = useSearchParams();
+  const search = searchParams?.get("success");
   const cart = useCart();
+  const session = useSession();
+  const userId = session.data?.user?.email;
+  useEffect(() => {
+    const onSuccesRemoveAll = () => {
+      if (search === "1") {
+        cart.removeAllAfterSuccess(true, userId);
+      }
+    };
+    onSuccesRemoveAll();
+  }, [userId]);
+
+  useEffect(() => {
+    cart.getItems(userId);
+  }, [userId]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -36,7 +54,7 @@ const CartPage = () => {
                 ))}
               </ul>
             </div>
-            <Summary/>
+            <Summary />
           </div>
         </div>
       </Container>
