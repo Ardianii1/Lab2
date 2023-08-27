@@ -12,7 +12,7 @@ export default function Signup() {
 
   const signup = () => {
     createUserWithEmailAndPassword(auth, email, password);
-    router.push("/signin")
+    router.push("/api/auth/signin");
   };
 
   return (

@@ -231,7 +231,7 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
     try {
       setLoading(true);
       console.log("data", data);
-      console.log("tags", selectedTags);
+      console.log("tags", data.tags);
       if (productData) {
         await axios.patch(
           `http://localhost:3001/api/products/${params.storeId}/update/${params.productId}`,
@@ -437,7 +437,7 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
               render={() => (
                 <FormItem>
                   <div className="mb-4">
-                    <FormLabel className="text-base">Sidebar</FormLabel>
+                    <FormLabel className="text-base">Tags</FormLabel>
                     <FormDescription>
                       Select the tags that best describes your product.
                     </FormDescription>

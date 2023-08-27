@@ -5,16 +5,17 @@ import Button from "./ui/button";
 import { ShoppingCart } from "lucide-react";
 import useCart from "@/hooks/use-cart";
 import { MouseEventHandler } from "react";
+import { useSession } from "next-auth/react";
 
 interface InfoProps {
   data: Product;
 }
 const Info: React.FC<InfoProps> = ({ data }) => {
     const cart = useCart();
-
+    const session = useSession();
   const onAddToCart: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.stopPropagation();
-    cart.addItem(data);
+    cart.addItem(data,session?.data?.user?.email);
   };
   return (
     <div>
@@ -30,7 +31,11 @@ const Info: React.FC<InfoProps> = ({ data }) => {
           <h3 className="font-semibold text-black">Size:</h3>
           <div>{data?.size?.name}</div>
         </div>
-        <div className="mt-10 flex items-centergap-x-3">
+        <div className="flex items-center gap-x-4">
+          <h3 className="font-semibold text-black">Tags:</h3>
+          <div>{data?.tags?.map((tag) => tag.name).join(", ")}</div>
+        </div>
+        <div className="mt-10 flex items-center gap-x-3">
           <Button onClick={onAddToCart} className="flex items-center gap-x-2">
             Add to Cart
             <ShoppingCart />

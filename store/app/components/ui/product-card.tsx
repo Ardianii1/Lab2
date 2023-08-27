@@ -34,7 +34,7 @@ const ProductCard: React.FC<ProductCard> = ({
         if (session?.data?.user) {
           cart.addItem(data,session?.data.user.email);
         } else {
-          router.push("/signin");
+          router.push("/api/auth/signin");
         }
     }
 

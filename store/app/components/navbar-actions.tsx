@@ -25,7 +25,7 @@ const NavbarActions = () => {
   const handleSignOut = () => {
     signOut();
     cart.removeAll();
-    router.push("/signin");
+    router.push("/");
   };
 
   return (
@@ -39,7 +39,11 @@ const NavbarActions = () => {
           {cart.items.length}
         </span>
       </Button>
-      {session ? <button onClick={handleSignOut}>Sign Out</button> : ""}
+      {session ? (
+        <button onClick={handleSignOut}>Sign Out</button>
+      ) : (
+        <button onClick={() => router.push("/api/auth/signin")}>Sign in</button>
+      )}
     </div>
   );
 };

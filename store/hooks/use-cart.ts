@@ -60,7 +60,7 @@ const useCart = create(
             set({ items: [...get().items, data] });
             alert("Item added to cart.");
           } else {
-            redirect("/signin");
+            redirect("/api/auth/signin");
           }
         } catch (error) {
           console.log(error);

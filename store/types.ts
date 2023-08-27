@@ -18,6 +18,7 @@ export interface Product {
     name:string;
     price:string;
     size:Size;
+    tags:Tag[]
     images:Image[];
 };
 export interface Image{
@@ -28,4 +29,8 @@ export interface Size {
     id:string;
     name:string;
     value:string;
+}
+export interface Tag {
+    id:string;
+    name:string;
 }

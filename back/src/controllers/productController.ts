@@ -84,7 +84,10 @@ export const getProductId = async (req: Request, res: Response) => {
         id: productId,
       },
       include: {
+        category:true,
         images: true,
+        size:true,
+        tags:true,
         attributes: true,
       },
     });
