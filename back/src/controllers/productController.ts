@@ -9,10 +9,13 @@ export const getAllProducts = async (req: Request, res: Response) => {
     const { searchParams } = new URL("http://localhost:3000/api/" + req.url);
     const categoryId = searchParams.get("categoryId") || undefined;
     const sizeId = searchParams.get("sizeId") || undefined;
+    const page = parseInt(searchParams.get("page") || "1");
+    const pageSize = parseInt(searchParams.get("pageSize") || "10");
     if (!storeId) {
       return res.status(400).json({ message: "StoreId is required" });
     }
-
+    const skip = (page - 1) * pageSize;
+    const startTime = Date.now();
     const products = await prismadb.product.findMany({
       where: {
         storeId: storeId,
@@ -21,12 +24,18 @@ export const getAllProducts = async (req: Request, res: Response) => {
       },
       include: {
         tags: true,
-        category:true,
-        size:true,
+        category: true,
+        brand:true,
+        size: true,
         images: true,
         attributes: true,
       },
+      skip,
+      take: pageSize,
     });
+    const endTime = Date.now();
+    const elapsedTime = endTime - startTime;
+    console.log("Time from db", elapsedTime);
     res.json(products);
   } catch (error) {
     console.error("Error getting all products:", error);
@@ -39,6 +48,7 @@ export const getAllStockProducts = async (req:Request, res:Response)=>{
   try {
     const { storeId } = req.params;
     const { searchParams } = new URL("http://localhost:3000/api/" + req.url);
+    console.log(searchParams)
     const categoryId = searchParams.get("categoryId") || undefined;
     const sizeId = searchParams.get("sizeId") || undefined;
     const stockQueryParam = searchParams.get("stock");
@@ -47,6 +57,7 @@ export const getAllStockProducts = async (req:Request, res:Response)=>{
     }
 
      const stockCondition = stockQueryParam === "true" ? { gt: 0 } : undefined;
+    const startTime = Date.now();
 
     const products = await prismadb.product.findMany({
       where: {
@@ -63,12 +74,44 @@ export const getAllStockProducts = async (req:Request, res:Response)=>{
         attributes: true,
       },
     });
+    const endTime = Date.now();
+    const elapsedTime = endTime - startTime;
+    console.log("Time from db", elapsedTime);
     res.json(products);
   } catch (error) {
     console.error("Error getting all products:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
+export const getProductIdStock = async (req: Request, res: Response) => {
+  console.log("productIDStock HIT");
+  try {
+    const { productId } = req.params;
+
+    if (!productId) {
+      return res.status(400).json({ message: "product Id is required" });
+    }
+    const startTime = Date.now();
+
+    const product = await prismadb.product.findUnique({
+      where: {
+        id: productId,
+      },
+      select:{
+        id:true,
+        stock:true,
+      }
+    });
+    const endTime = Date.now();
+    const elapsedTime = endTime - startTime;
+    console.log("Time from db", elapsedTime);
+    res.json(product);
+  } catch (error) {
+    console.error("Error getting product with that id:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 export const getProductId = async (req: Request, res: Response) => {
   console.log("productID HIT");
@@ -115,7 +158,7 @@ export const createProduct = async (req: Request, res: Response) => {
       attributes,
       userId,
     } = req.body;
-    console.log("TAGS",tags);
+    console.log("body", JSON.stringify(req.body));
     const { storeId } = req.params;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -160,28 +203,6 @@ export const createProduct = async (req: Request, res: Response) => {
     if (!storeByUserId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-
-    const existingAttributes = await Promise.all(
-      attributes.map(async (attr: { name: string; value: string }) => {
-        const existingAttribute = await prismadb.attribute.findFirst({
-          where: {
-            name: attr.name,
-            value: attr.value,
-          },
-        });
-        return existingAttribute;
-      })
-    );
-
-    // Create an array to hold attribute IDs
-    const attributeIds: string[] = [];
-
-    // Loop through existingAttributes and add IDs to attributeIds
-    existingAttributes.forEach((existingAttribute) => {
-      if (existingAttribute) {
-        attributeIds.push(existingAttribute.id);
-      }
-    });
 
     const product = await prismadb.product.create({
       data: {
@@ -231,28 +252,17 @@ export const patchProduct = async (req: Request, res: Response) => {
       price,
       stock,
       images,
+      tags,
+      attributes,
       userId,
     } = req.body;
     const { productId, storeId } = req.params;
-    if (!userId) {
-      console.log("No userId here : Unauthorized");
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    if (!productId) {
-      return res.status(400).json({ message: "StoreId is required" });
-    }
-    if (!storeId) {
-      return res.status(400).json({ message: "StoreId is required" });
-    }
-    if (!categoryId) {
-      return res.status(400).json({ message: "CategoryId is required" });
-    }
-    if (!brandId) {
-      return res.status(400).json({ message: "BrandId is required" });
-    }
-    if (!sizeId) {
-      return res.status(400).json({ message: "SizeId is required" });
-    }
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+    if (!productId)return res.status(400).json({ message: "StoreId is required" });
+    if (!storeId)return res.status(400).json({ message: "StoreId is required" });
+    if (!categoryId)return res.status(400).json({ message: "CategoryId is required" });
+    if (!brandId)return res.status(400).json({ message: "BrandId is required" });
+    if (!sizeId)return res.status(400).json({ message: "SizeId is required" });
     if (!name) {
       return res.status(400).json({ message: "Name is required" });
     }
@@ -296,6 +306,12 @@ export const patchProduct = async (req: Request, res: Response) => {
         images: {
           deleteMany: {},
         },
+        tags:{
+          deleteMany:{}
+        },
+        attributes:{
+          deleteMany:{}
+        },
       },
     });
 
@@ -304,6 +320,14 @@ export const patchProduct = async (req: Request, res: Response) => {
         id: productId,
       },
       data: {
+        tags: {
+          connect: tags.map((tagId: string) => ({ id: tagId })),
+        },
+        attributes: {
+          createMany: {
+            data: attributes,
+          },
+        },
         images: {
           createMany: {
             data: [...images.map((image: { url: string }) => image)],

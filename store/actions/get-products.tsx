@@ -2,7 +2,7 @@ import { Product } from "@/types";
 
 import qs from "query-string";
 
-const URL = `http://localhost:3001/api/products/c6fb75eb-9c87-4e21-b25f-f0ef0dbb212d/allStock`;
+const URL = `http://localhost:3001/api/products/c6fb75eb-9c87-4e21-b25f-f0ef0dbb212d/allStock?stock=true`;
 
 interface Query {
   categoryId?: string;

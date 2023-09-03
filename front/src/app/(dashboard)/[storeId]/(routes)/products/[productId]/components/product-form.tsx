@@ -26,13 +26,14 @@ import { AlertModal } from "@/components/modals/alert-modal";
 import { ApiAlert } from "@/components/ui/api-alert";
 import ImageUpload from "@/components/ui/image-upload";
 import {
-  Select,
+  Select as Selectt,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { TagSelector } from "./tag-selector";
 
 type Product = {
   id: string;
@@ -124,15 +125,13 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
   const [categoryData, setCategoryData] = useState<Category[] | []>([]);
   const [sizeData, setSizeData] = useState<Size[] | []>([]);
   const [brandData, setBrandData] = useState<Brand[] | []>([]);
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [attributes, setAttributes] = useState<Attribute[] | []>([{ name: "", value: "" },]);
+  const [tagsData, setTagsData] = useState<Tag[] | []>([]);
   const [tagData, setTagData] = useState<Tag[] | []>([]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const params = useParams();
   const router = useRouter();
   const { userId } = useAuth();
-
   const title = productData ? "Edit product" : "Create product";
   const description = productData ? "Edit a product" : "Add a new product";
   const toastMessage = productData ? "Product updated!" : "Product created!";
@@ -159,7 +158,7 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
         const tagsResponse = await axios.get(
           `http://localhost:3001/api/tags/${params.storeId}/all`
         );
-        console.log(tagsResponse);
+        // console.log(tagsResponse.data[0].name);
         // console.log(categoryResponse, sizeResponse, brandResponse);
         if (!response) {
           setproductData({
@@ -181,7 +180,9 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
         setCategoryData(categoryResponse.data);
         setSizeData(sizeResponse.data);
         setBrandData(brandResponse.data);
-        setTagData(tagsResponse.data);
+        setTagsData(tagsResponse.data);
+        setTagData(productData.tags);
+        console.log(productData.tags);
         productForm.reset(response.data, categoryResponse.data);
         router.refresh();
       } catch (error) {
@@ -191,6 +192,7 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
 
     fetchData();
   }, []);
+  // console.log(tagData)
 
   const defaultValuess = productData
     ? {
@@ -237,6 +239,7 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
           `http://localhost:3001/api/products/${params.storeId}/update/${params.productId}`,
           {
             ...data,
+            // tags:tags,
             attributes: attributes,
             userId: userId,
           }
@@ -285,7 +288,7 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
       setOpen(false);
     }
   };
-
+console.log(productData.tags)
   return (
     <>
       <AlertModal
@@ -321,7 +324,7 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
-                  <Select
+                  <Selectt
                     disabled={loading}
                     onValueChange={field.onChange}
                     value={field.value}
@@ -342,7 +345,7 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
                         </SelectItem>
                       ))}
                     </SelectContent>
-                  </Select>
+                  </Selectt>
                   <FormMessage />
                 </FormItem>
               )}
@@ -353,7 +356,7 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Brand</FormLabel>
-                  <Select
+                  <Selectt
                     disabled={loading}
                     onValueChange={field.onChange}
                     value={field.value}
@@ -374,7 +377,7 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
                         </SelectItem>
                       ))}
                     </SelectContent>
-                  </Select>
+                  </Selectt>
                   <FormMessage />
                 </FormItem>
               )}
@@ -385,7 +388,7 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Size</FormLabel>
-                  <Select
+                  <Selectt
                     disabled={loading}
                     onValueChange={field.onChange}
                     value={field.value}
@@ -406,79 +409,51 @@ export const ProductForm: React.FC<ProductFormProps> = () => {
                         </SelectItem>
                       ))}
                     </SelectContent>
-                  </Select>
+                  </Selectt>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {/* <div className="mb-4">
-              <label className="text-base">Tags</label>
-              <div>
-                {tagData.map((tag) => (
-                  <div
-                    key={tag.id}
-                    className="flex flex-row items-start space-x-3 space-y-0"
-                  >
-                    <input
-                      type="checkbox"
-                      name="tags"
-                      value={tag.id}
-                      checked={selectedTags.includes(tag.id)}
-                      onChange={() => handleTagToggle(tag.id)}
-                    />
-                    <label className="font-normal">{tag.name}</label>
-                  </div>
-                ))}
+            <div className="flex items-center justify-between">
+              <div className="flex flex-1 items-center space-x-2">
+              <TagSelector
+                title="Select Tags"
+                options={tagsData.map((tag) => ({
+                  id: tag.id,
+                  name: tag.name,
+                }))}
+                selectedTags={productForm.watch("tags") || []}
+                onTagSelect={(tagValue) => {
+                  const tags = productForm.getValues("tags") || [];
+                  if (!tags.includes(tagValue)) {
+                    tags.push(tagValue);
+                    productForm.setValue("tags", tags);
+                  }
+                }}
+                onTagDeselect={(tagValue) => {
+                  const tags = productForm.getValues("tags") || [];
+                  const updatedTags = tags.filter((tag) => tag !== tagValue);
+                  productForm.setValue("tags", updatedTags);
+                }}
+              />
+              <div className="space-x-2">
+                {productForm.watch("tags").map((selectedTagId) => {
+                  const selectedTag = tagData.find(
+                    (tag) => tag.id === selectedTagId
+                  );
+                  return (
+                    <Badge
+                      key={selectedTag?.id}
+                      variant="secondary"
+                      className="rounded-sm px-2 py-1 font-normal"
+                    >
+                      {selectedTag?.name}
+                    </Badge>
+                  );
+                })}
               </div>
-            </div> */}
-            <FormField
-              control={productForm.control}
-              name="tags"
-              render={() => (
-                <FormItem>
-                  <div className="mb-4">
-                    <FormLabel className="text-base">Tags</FormLabel>
-                    <FormDescription>
-                      Select the tags that best describes your product.
-                    </FormDescription>
-                  </div>
-                  {tagData.map((tag) => (
-                    <FormField
-                      key={tag.id}
-                      control={productForm.control}
-                      name="tags"
-                      render={({ field }) => {
-                        return (
-                          <FormItem
-                            key={tag.id}
-                            className="flex flex-row items-start space-x-3 space-y-0"
-                          >
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value?.includes(tag.id)}
-                                onCheckedChange={(checked) => {
-                                  return checked
-                                    ? field.onChange([...field.value, tag.id])
-                                    : field.onChange(
-                                        field.value?.filter(
-                                          (value) => value !== tag.id
-                                        )
-                                      );
-                                }}
-                              />
-                            </FormControl>
-                            <FormLabel className="font-normal">
-                              {tag.name}
-                            </FormLabel>
-                          </FormItem>
-                        );
-                      }}
-                    />
-                  ))}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              </div>
+            </div>
             <FormField
               control={productForm.control}
               name="name"

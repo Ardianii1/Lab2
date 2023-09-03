@@ -10,126 +10,73 @@ import { ProductColumn, columns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import Link from "next/link";
 
-type Product ={
+type Product = {
   id: string;
   name: string;
   description: string;
-  brandId: string;
-  categoryId: string;
-  sizeId: string;
+  brand: string;
+  category: string;
+  size: string;
   status: string;
   stock: number;
   price: number;
   createdAt: Date;
-}
+};
 
 const ProductClient = () => {
   const [productsData, setproductsData] = useState<Product[] | []>([]);
   const [formattedProducts, setFormattedProducts] = useState<ProductColumn[]>(
     []
   );
-
-  useEffect(() => {
-    const fetchproducts = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3001/api/products/${params.storeId}/all`
-        );
-        console.log(response);
-
-        if (!response) {
-          setproductsData([]);
-          return null;
-        }
-        // console.log(response.data)
-        setproductsData(response.data);
-      } catch (error) {
-        console.error("Error fetching store:", error);
-      }
-    };
-
-    fetchproducts();
-  }, []);
-
-  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
   const params = useParams();
 
-  const fetchCategoryLabel = async (categoryId: string): Promise<string> => {
+  const fetchProducts = async () => {
     try {
+      // setLoading(true);
       const response = await axios.get(
-        `http://localhost:3001/api/categories/${categoryId}`
+        `http://localhost:3001/api/products/${params.storeId}/all?page=${currentPage}&pageSize=${pageSize}`
       );
 
-      if (response && response.data && response.data.name) {
-        return response.data.name;
+      if (!response) {
+        setproductsData([]);
+        return;
       }
-      return "N/A"; // Return a default label if category data not found
-    } catch (error) {
-      console.error("Error fetching category:", error);
-      return "N/A";
-    }
-  };
 
-  const fetchCategoryLabelsForCategories = async (): Promise<{
-    [key: string]: string;
-  }> => {
-    const categoryLabels: { [key: string]: string } = {};
-    for (const category of productsData) {
-      const label = await fetchCategoryLabel(category.categoryId);
-      categoryLabels[category.id] = label;
+      setproductsData(response.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
     }
-    return categoryLabels;
   };
+  useEffect(() => {
+    fetchProducts();
+  }, [currentPage]);
 
   useEffect(() => {
     const updateCategoryLabels = async () => {
       if (productsData.length > 0) {
-        const categoryLabels = await fetchCategoryLabelsForCategories();
-        const brandLabels = await fetchBrandLabelsForCategories();
-
         setFormattedProducts(
           productsData.map((item) => ({
             id: item.id,
             name: item.name,
             status: item.status,
-            price:item.price,
-            categoryId: item.categoryId,
-            category: categoryLabels[item.id],
-            brand: brandLabels[item.id],
-            brandId:item.brandId
+            description: item.description,
+            price: item.price,
+            categoryId: item.category.name,
+            category: item.category.name,
+            brand: item.brand.name,
+            brandId: item.brand.name,
+            createdAt: item.createdAt,
           }))
         );
       }
     };
     updateCategoryLabels();
   }, [productsData]);
-  
-  const fetchBrandLabel = async (brandId: string): Promise<string> => {
-    try {
-      const response = await axios.get(
-        `http://localhost:3001/api/brands/${brandId}`
-      );
 
-      if (response && response.data && response.data.name) {
-        return response.data.name;
-      }
-      return "N/A"; // Return a default label if brand data not found
-    } catch (error) {
-      console.error("Error fetching brand:", error);
-      return "N/A";
-    }
-  };
 
-  const fetchBrandLabelsForCategories = async (): Promise<{
-    [key: string]: string;
-  }> => {
-    const brandLabels: { [key: string]: string } = {};
-    for (const brand of productsData) {
-      const label = await fetchBrandLabel(brand.brandId);
-      brandLabels[brand.id] = label;
-    }
-    return brandLabels;
-  };
   return (
     <>
       <div className="flex items-center justify-between">
@@ -147,7 +94,11 @@ const ProductClient = () => {
         </Link>
       </div>
       <Separator />
-      <DataTable columns={columns} data={formattedProducts} searchKey="name" />
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <DataTable columns={columns} data={formattedProducts} searchKey="name"/>
+      )}
     </>
   );
 };

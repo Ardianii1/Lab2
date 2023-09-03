@@ -5,6 +5,8 @@ import { toast } from "react-hot-toast/headless";
 import { collection, addDoc, getDocs, query, where, deleteDoc } from "firebase/firestore";
 import { db} from "../app/firebase/firebase";
 import { redirect } from "next/navigation";
+import getProduct from "@/actions/get-products";
+import axios from "axios";
 
 
 interface CartStore {
@@ -31,7 +33,44 @@ const useCart = create(
           const cartItems = cartQuerySnapshot.docs.map(
             (doc) => doc.data().productData
           );
-          set({ items: cartItems });
+
+
+          const itemsWithAvailableStock = await Promise.all(
+            cartItems.map(async (item) => {
+              const productInfo = await axios.get(
+                `http://localhost:3001/api/products/${item.id}/stock`
+              ); 
+              
+              if (productInfo && productInfo.data.stock > 0) {
+                
+                return item;
+              } else if (productInfo.data.stock === 0) {
+                const cartQuery = query(
+                  userCartCollection,
+                  where("productData.id", "==", item.id)
+                );
+                const cartQuerySnapshot = await getDocs(cartQuery);
+
+                if (!cartQuerySnapshot.empty) {
+                  const docRef = cartQuerySnapshot.docs[0].ref;
+                  await deleteDoc(docRef);
+                  alert(
+                    `Item with Name ${item.name} removed from cart due to stock 0.`
+                  );
+                }
+              } else {
+                console.log(`Item with Name ${item.name} has no stock.`);
+              }
+              return null;
+            })
+          );
+          
+
+          // Remove null values and update the local 'items' array
+          const validItems = itemsWithAvailableStock.filter(
+            (item) => item !== null
+          );
+          set({ items: validItems });
         }
       },
       addItem: async (data: Product, userId: string | undefined | null) => {
