@@ -1,13 +1,19 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { Product } from "@/types";
+import { Product } from "@/lib/types";
 import { toast } from "react-hot-toast/headless";
-import { collection, addDoc, getDocs, query, where, deleteDoc } from "firebase/firestore";
-import { db} from "../app/firebase/firebase";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  deleteDoc,
+} from "firebase/firestore";
+import { db } from "../app/firebase/firebase";
 import { redirect } from "next/navigation";
 import getProduct from "@/actions/get-products";
 import axios from "axios";
-
 
 interface CartStore {
   items: Product[];
@@ -15,7 +21,10 @@ interface CartStore {
   addItem: (data: Product, userId: string | undefined | null) => void;
   removeItem: (id: string, userId: string | undefined | null) => void;
   removeAll: () => void;
-  removeAllAfterSuccess: (success:boolean, userId: string | undefined | null) => void;
+  removeAllAfterSuccess: (
+    success: boolean,
+    userId: string | undefined | null
+  ) => void;
 }
 const useCart = create(
   persist<CartStore>(
@@ -34,15 +43,13 @@ const useCart = create(
             (doc) => doc.data().productData
           );
 
-
           const itemsWithAvailableStock = await Promise.all(
             cartItems.map(async (item) => {
               const productInfo = await axios.get(
                 `http://localhost:3001/api/products/${item.id}/stock`
-              ); 
-              
+              );
+
               if (productInfo && productInfo.data.stock > 0) {
-                
                 return item;
               } else if (productInfo.data.stock === 0) {
                 const cartQuery = query(
@@ -64,7 +71,6 @@ const useCart = create(
               return null;
             })
           );
-          
 
           // Remove null values and update the local 'items' array
           const validItems = itemsWithAvailableStock.filter(
@@ -139,9 +145,14 @@ const useCart = create(
         success: boolean,
         userId: string | undefined | null
       ) => {
-        if (success&&userId) {
+        if (success && userId) {
           try {
-            const userCartCollection = collection(db,"cart",userId,"products");
+            const userCartCollection = collection(
+              db,
+              "cart",
+              userId,
+              "products"
+            );
             const cartQuery = query(userCartCollection);
 
             const cartQuerySnapshot = await getDocs(cartQuery);

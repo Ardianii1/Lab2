@@ -2,7 +2,7 @@
 
 import Button from "@/app/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Size } from "@/types";
+import { Size } from "@/lib/types";
 import { useSearchParams, useRouter } from "next/navigation";
 import qs from "query-string";
 
@@ -51,7 +51,9 @@ const Filter: React.FC<FilterProps> = ({ data, name, valueKey }) => {
                 selectedValue === filter?.id && "bg-black text-white"
               )}
               onClick={() => onClick(filter?.id as string)}
-            >{filter?.name}</Button>
+            >
+              {filter?.name}
+            </Button>
           </div>
         ))}
       </div>

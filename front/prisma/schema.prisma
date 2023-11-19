@@ -93,20 +93,20 @@ model Review {
 }
 
 model Product {
-  id          String       @id @default(uuid())
+  id          String      @id @default(uuid())
   userId      String
   storeId     String
-  store       Store        @relation("StoreToProduct", fields: [storeId], references: [id])
+  store       Store       @relation("StoreToProduct", fields: [storeId], references: [id])
   categoryId  String
-  category    Category     @relation("CategoryToProduct", fields: [categoryId], references: [id])
+  category    Category    @relation("CategoryToProduct", fields: [categoryId], references: [id])
   sizeId      String // Foreign Key to Size
-  size        Size         @relation(fields: [sizeId], references: [id])
+  size        Size        @relation(fields: [sizeId], references: [id])
   brandId     String
-  brand       Brand        @relation("BrandToProduct", fields: [brandId], references: [id])
+  brand       Brand       @relation("BrandToProduct", fields: [brandId], references: [id])
   reviewId    String?
-  review      Review?      @relation("ReviewToProduct", fields: [reviewId], references: [id])
+  review      Review?     @relation("ReviewToProduct", fields: [reviewId], references: [id])
   // tagId       String?
-  tags        Tag[]        @relation("TagToProduct")
+  tags        Tag[]       @relation("TagToProduct")
   attributes  Attribute[]
   name        String
   description String
@@ -114,9 +114,9 @@ model Product {
   price       Decimal
   stock       Int
   images      Image[]
-  orderItems OrderItem[]
-  createdAt   DateTime     @default(now())
-  updateAt    DateTime     @updatedAt
+  orderItems  OrderItem[]
+  createdAt   DateTime    @default(now())
+  updateAt    DateTime    @updatedAt
 
   @@index([storeId])
   @@index([categoryId])
@@ -135,18 +135,21 @@ model Image {
 
   @@index([productId])
 }
-model Tag{
-  id String @id @default(uuid())
-  name String
+
+model Tag {
+  id        String    @id @default(uuid())
+  name      String
   storeId   String
   store     Store     @relation("StoreToTag", fields: [storeId], references: [id])
   productId String?
-  products Product[] @relation("TagToProduct")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  products  Product[] @relation("TagToProduct")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
   @@index([productId])
   @@index([storeId])
 }
+
 model Attribute {
   id        String   @id @default(uuid())
   productId String // Foreign Key to Product
@@ -155,30 +158,48 @@ model Attribute {
   value     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
   @@index([productId])
 }
 
 model Order {
-  id String @id @default (uuid())
-  storeId String
-  store Store @relation ("StoreToOrder", fields: [storeId], references :[id])
+  id         String      @id @default(uuid())
+  storeId    String
+  store      Store       @relation("StoreToOrder", fields: [storeId], references: [id])
   orderItems OrderItem[]
-  isPaid Boolean @default(false)
-  phone String @default("")
-  adress String @default("")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  isPaid     Boolean     @default(false)
+  phone      String      @default("")
+  adress     String      @default("")
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 
-  @@index ([storeId])
+  @@index([storeId])
 }
 
-model OrderItem{
-  id String @id @default (uuid())
-  orderId String
-  order Order @relation(fields: [orderId], references: [id])
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
   productId String
-  product Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
 
-  @@index ([orderId])
-  @@index ([productId])
+  @@index([orderId])
+  @@index([productId])
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  USER
+}
+
+model User {
+  id       String   @id @default(uuid())
+  email    String   @unique
+  password String
+  name     String?
+  role     UserRole @default(USER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

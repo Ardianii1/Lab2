@@ -15,11 +15,17 @@ export interface Product {
   id: string;
   category: Category;
   name: string;
+  description: string;
+  brand: {
+    id:string,
+    name:string
+  };
   price: string;
   stock: number;
   size: Size;
   tags: Tag[];
   images: Image[];
+  attributes: Attribute[];
 }
 export interface Image {
   id: string;
@@ -34,3 +40,9 @@ export interface Tag {
   id: string;
   name: string;
 }
+
+export interface Attribute {
+  id: string;
+  name: string;
+  value: string;
+ }

@@ -39,17 +39,19 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   searchKey: string;
+  // searchNumber: number;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   searchKey,
+  // searchNumber,
 }: DataTableProps<TData, TValue>) {
-    const [sorting, setSorting] = React.useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-        []
-      )
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
   const table = useReactTable({
     data,
     columns,
@@ -60,10 +62,10 @@ export function DataTable<TData, TValue>({
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     state: {
-        sorting,
-        columnFilters,
-      },
-  })
+      sorting,
+      columnFilters,
+    },
+  });
 
   return (
     <div>
@@ -76,6 +78,18 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
+        {/* <Input
+        type="number"
+          placeholder="Search by number"
+          value={(table.getColumn(searchNumber)?.getFilterValue() as number) ?? null}
+          onChange={(event) =>
+            {
+              table.getColumn(searchNumber)?.setFilterValue(event.target.value);
+              console.log(event.target.value)
+            }
+          }
+          className="max-w-sm"
+        /> */}
       </div>
       <div className="rounded-md border">
         <Table>

@@ -17,6 +17,7 @@ import axios from "axios";
 import { useAuth } from "@clerk/nextjs";
 import { AlertModal } from "@/components/modals/alert-modal";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 interface CellActionProps {
   data: ReviewColumn;
@@ -27,7 +28,8 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const params = useParams();
-  const { userId } = useAuth();
+  const { data: session } = useSession();
+  const userId = session?.user?.email;
 
   const onCopy = (id: string) => {
     navigator.clipboard.writeText(id);

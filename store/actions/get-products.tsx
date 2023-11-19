@@ -1,8 +1,8 @@
-import { Product } from "@/types";
+import { Product } from "@/lib/types";
 
 import qs from "query-string";
 
-const URL = `http://localhost:3001/api/products/c6fb75eb-9c87-4e21-b25f-f0ef0dbb212d/allStock?stock=true`;
+const URL = `http://localhost:3001/api/products/0e473b04-a06e-4624-a439-02d4f6245b2a/allStock?stock=true`;
 
 interface Query {
   categoryId?: string;

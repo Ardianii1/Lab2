@@ -1,10 +1,10 @@
 "use client";
 
 import Button from "@/app/components/ui/button";
-import { Size } from "@/types";
+import { Size } from "@/lib/types";
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
-import {Dialog} from "@headlessui/react"
+import { Dialog } from "@headlessui/react";
 import IconButton from "@/app/components/ui/icon-button";
 import Filter from "./filter";
 

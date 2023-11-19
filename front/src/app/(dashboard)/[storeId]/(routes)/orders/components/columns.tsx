@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button"
 
 export type OrderColumn = {
   id: string
-  phone: string
+  phone: number
   address: string
   totalPrice: string
   products: string
-  createdAt: string
+  createdAt: Date
 }
 
 export const columns: ColumnDef<OrderColumn>[] = [

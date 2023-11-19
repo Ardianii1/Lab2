@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 export type TagColumn = {
   id: string;
   name:string;
-  value: string;
   createdAt: Date
 }
 
@@ -25,10 +24,6 @@ export const columns: ColumnDef<TagColumn>[] = [
           </Button>
         )
       },
-  },
-  {
-    accessorKey: "value",
-    header: "Value",
   },
   {
     accessorKey: "createdAt",

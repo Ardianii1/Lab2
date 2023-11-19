@@ -1,33 +1,39 @@
-import { auth } from "@clerk/nextjs";
-import axios from "axios";
-import {redirect} from "next/navigation"
-import Navbar from "@/components/navbar"
+import { redirect } from "next/navigation";
+import Navbar from "@/components/navbar";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import prismadb from "@/lib/prismadb";
 
 export default async function DashboardLayout({
-    children,
-    params
-}:{
-    children: React.ReactNode;
-    params:{ storeId : string}
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: { storeId: string };
 }) {
-    const { userId } = auth()
-    if (!userId) {
-        redirect("/sign-in")
-    }
+  const session = await getServerSession(authOptions);
 
-    const store = await axios.get(`http://localhost:3001/api/stores/${params.storeId}`, {
-      params: {
-        userId: userId,
-      },
-    } )
-    if (!store) {
-        redirect('/');
-      };
-    
-      return (
-        <>
-          <Navbar/>
-          {children}
-        </>
-      );
+  const userId = session?.user?.email;
+  console.log(userId);
+  if (!userId) {
+    redirect("/signin");
+  }
+
+  const store = await prismadb.store.findFirst({
+    where: {
+      id: params.storeId,
+      // userId,
+    },
+  });
+
+  if (!store) {
+    redirect("/");
+  }
+
+  return (
+    <>
+      <Navbar user={session.user} />
+      {children}
+    </>
+  );
 }

@@ -1,6 +1,9 @@
 import React from "react";
 import ReviewClient from "./components/client";
-
+export const metadata = {
+  title: "Reviews",
+  description: "Reviews for the store",
+};
 const SizePage = () => {
   return (
     <div className="flex-col px-4">

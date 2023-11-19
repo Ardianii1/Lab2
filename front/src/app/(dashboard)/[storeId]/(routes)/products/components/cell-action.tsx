@@ -13,10 +13,11 @@ import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useAuth } from "@clerk/nextjs";
 import { AlertModal } from "@/components/modals/alert-modal";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 interface CellActionProps {
   data: ProductColumn;
@@ -27,7 +28,8 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const params = useParams();
-  const { userId } = useAuth();
+  const { data: session } = useSession();
+  const userId = session?.user?.email;
 
   const onCopy = (id: string) => {
     navigator.clipboard.writeText(id);
@@ -36,23 +38,44 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
   const onDelete = async () => {
     try {
-      setLoading(true);
-      axios.delete(
-        `http://localhost:3001/api/products/${params.storeId}/delete/${data.id}`,
-        {
-          data: {
-            userId: userId,
-          },
-        }
-      );
-      router.push(`http://localhost:3000/${params.storeId}/products`);
-      router.refresh();
-      toast.success("Product Deleted successfuly");
+       setLoading(true);
+       await axios.delete(
+          `http://localhost:3001/api/products/${params.storeId}/delete/${data.id}`,
+          {
+             data: {
+                userId: userId,
+             },
+          }
+       );
+       router.push(`http://localhost:3000/${params.storeId}/products`);
+       router.refresh();
+       toast.success("Product Deleted successfuly");
     } catch (error) {
-      toast.error("Make sure you removed all products and categories first.");
+       if (axios.isAxiosError(error)) {
+          const axiosError = error as AxiosError<any>;
+
+          if (axiosError.response) {
+             const status = axiosError.response.status;
+             const errorMessage = axiosError.response.data.error;
+
+             if (status === 401) {
+                toast.error(errorMessage);
+             } else if (status === 403) {
+                toast.error(errorMessage);
+             } else if (status === 404) {
+                toast.error(errorMessage);
+             } else {
+                toast.error(errorMessage);
+             }
+          } else {
+             toast.error("Network error: Unable to connect to the server.");
+          }
+       } else {
+          toast.error("An error occurred.");
+       }
     } finally {
-      setLoading(false);
-      setOpen(false);
+       setLoading(false);
+       setOpen(false);
     }
   };
 

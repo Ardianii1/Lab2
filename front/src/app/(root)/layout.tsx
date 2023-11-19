@@ -1,45 +1,43 @@
-"use client"
-import {useAuth } from "@clerk/nextjs";
-import {redirect, useRouter} from "next/navigation"
-import axios from "axios";
-import { StoreModal } from "@/components/modals/store-modal";
-import { toast } from "react-hot-toast";
-import Error from "next/error";
-import { useEffect } from "react";
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
+import prismadb from "@/lib/prismadb";
 
 export default async function SetupLayout({
-    children
-}:{
-    children: React.ReactNode
-}){
-    const { userId } = useAuth()
-    const router = useRouter()
-    if (!userId) {
-        redirect("/sign-in")
-    }
-    useEffect(()=>{
-        async function fetchStore() {
-        try {
-            const store = await axios.get(`http://localhost:3001/api/stores/user/${userId}`)
-            if (store) {
-                router.push(`http://localhost:3000/${store.data.id}`)
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-    fetchStore()
-    },[])
-    // console.log(store)
-    // if (!store) {
-    //     return <StoreModal/>
-    // }
-    
-    return (
-        <>
-          <div>
-            {children}
-          </div>
-        </>
-      );
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await getServerSession(authOptions);
+  
+
+  const userId = session?.user?.email;
+  //@ts-ignore
+  const userRole = session?.user?.role;
+
+  console.log(session);
+
+  if (!userId) {
+    redirect("/signin");
+  }
+
+  const store = await prismadb.store.findFirst({
+    where: {
+      userId,
+    },
+  });
+//   if (!store) {
+//    return
+//   }
+
+  if (userRole === "USER") {
+     redirect("/0e473b04-a06e-4624-a439-02d4f6245b2a");
+  } else if ((userRole === "MANAGER" || userRole === "ADMIN") && store) {
+     redirect(`/${store?.id}`);
+  }
+  return (
+    <>
+      <div >{children}</div>
+    </>
+  );
 }

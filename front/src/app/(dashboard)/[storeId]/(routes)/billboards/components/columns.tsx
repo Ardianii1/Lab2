@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 export type BillboardColumn = {
   id: string
   label: string
-  createdAt: string
+  createdAt: Date
 }
 
 export const columns: ColumnDef<BillboardColumn>[] = [

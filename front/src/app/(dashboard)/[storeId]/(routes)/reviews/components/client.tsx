@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Plus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useParams} from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { ReviewColumn, columns } from "./columns";
@@ -21,27 +21,27 @@ interface review {
 const ReviewClient = () => {
   const [reviewsData, setreviewsData] = useState<review[] | []>([]);
 
-  useEffect(() => {
-    const fetchreviews = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3001/api/reviews/${params.storeId}/all`
-        );
-        console.log(response);
+//   useEffect(() => {
+//     const fetchreviews = async () => {
+//       try {
+//         const response = await axios.get(
+//           `http://localhost:3001/api/reviews/${params.storeId}/all`
+//         );
+//         console.log(response);
 
-        if (!response) {
-          setreviewsData([]);
-          return null;
-        }
-        // console.log(response.data)
-        setreviewsData(response.data);
-      } catch (error) {
-        console.error("Error fetching store:", error);
-      }
-    };
+//         if (!response) {
+//           setreviewsData([]);
+//           return null;
+//         }
+//         // console.log(response.data)
+//         setreviewsData(response.data);
+//       } catch (error) {
+//         console.error("Error fetching store:", error);
+//       }
+//     };
 
-    fetchreviews();
-  }, []);
+//     fetchreviews();
+//   }, []);
 
   const params = useParams();
 
@@ -60,17 +60,18 @@ const ReviewClient = () => {
           title={`Reviews (${reviewsData.length})`}
           description="Manage reviews for your store"
         />
-        <Link href={`http://localhost:3000/${params.storeId}/reviews/new`}>
+        {/* <Link href={`http://localhost:3000/${params.storeId}/reviews/new`}>
           <Button asChild>
             <div>
               <Plus className="mr-2 h-4 w-4" />
               Add new
             </div>
           </Button>
-        </Link>
+        </Link> */}
       </div>
       <Separator />
-      <DataTable columns={columns} data={formattedreviews} searchKey="title" />
+      {/* <DataTable columns={columns} data={formattedreviews} searchKey="title" /> */}
+      <h1 className="text-2xl text-center pt-4">Coming soon</h1>
     </>
   );
 };

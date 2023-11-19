@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button"
 export type CategoryColumn = {
   id: string
   name: string
-  billboardLabel: string
-  createdAt: string
+  billboard: string
+  createdAt: Date
 }
 
 export const columns: ColumnDef<CategoryColumn>[] = [
@@ -40,7 +40,7 @@ export const columns: ColumnDef<CategoryColumn>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => row.original.billboardLabel,
+    cell: ({ row }) => row.original.billboard,
   },
   {
     accessorKey: "createdAt",

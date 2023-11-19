@@ -1,63 +1,86 @@
-"use client"
+"use client";
 
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { CategoryColumn } from "./columns"
-import { Button } from "@/components/ui/button"
-import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react"
-import { toast } from "react-hot-toast"
-import { useParams, useRouter } from "next/navigation"
-import { useState } from "react"
-import axios from "axios"
-import { useAuth } from "@clerk/nextjs"
-import { AlertModal } from "@/components/modals/alert-modal"
-import Link from "next/link"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { CategoryColumn } from "./columns";
+import { Button } from "@/components/ui/button";
+import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
+import { toast } from "react-hot-toast";
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
+import axios, { AxiosError } from "axios";
+import { useAuth } from "@clerk/nextjs";
+import { AlertModal } from "@/components/modals/alert-modal";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
 
-interface CellActionProps{
-    data: CategoryColumn
+interface CellActionProps {
+  data: CategoryColumn;
 }
 
+export const CellAction: React.FC<CellActionProps> = ({ data }) => {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const params = useParams();
+  const { data: session } = useSession();
+  const userId = session?.user?.email;
 
-export const CellAction:React.FC<CellActionProps> = ({
-    data
-}) => {
-    const [open, setOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const router = useRouter()
-    const params = useParams()
-    const {userId } = useAuth()
+  const onCopy = (id: string) => {
+    navigator.clipboard.writeText(id);
+    toast.success("Category Id copied to clipboard.");
+  };
 
-    const onCopy = (id: string) => {
-        navigator.clipboard.writeText(id);
-        toast.success('Category Id copied to clipboard.');
-    }
-
-    const onDelete = async() => {
-        try {
-          setLoading(true);
-          const response = await axios.delete(
-            `http://localhost:3001/api/categories/${params.storeId}/delete/${data.id}`,
-            {
-              data: {
-                userId: userId,
-              },
-            }
-          );
-          // console.log("DELETEDD")
-          if (response.data.message) {
-            toast.error(response.data.message);
-          } else {
-            router.refresh();
-            router.push(`http://localhost:3000/${params.storeId}/categories`);
-            toast.success("Category Deleted successfully");
-          }
-        } catch (error) {
-            console.log(error)
-            toast.error("Make sure you removed all products of this category first.")
-        } finally {
-            setLoading(false)
-            setOpen(false)
+  const onDelete = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.delete(
+        `http://localhost:3001/api/categories/${params.storeId}/delete/${data.id}`,
+        {
+          data: {
+            userId: userId,
+          },
         }
+      );
+      // console.log("DELETEDD")
+      
+        router.refresh();
+        router.push(`http://localhost:3000/${params.storeId}/categories`);
+        toast.success("Category Deleted successfully");
+      
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<any>;
+
+        if (axiosError.response) {
+          const status = axiosError.response.status;
+          const errorMessage = axiosError.response.data.error;
+
+          if (status === 401) {
+            toast.error(errorMessage);
+          } else if (status === 403) {
+            toast.error(errorMessage);
+          } else if (status === 404) {
+            toast.error(errorMessage);
+          } else {
+            toast.error(errorMessage);
+          }
+        } else {
+          toast.error("Network error: Unable to connect to the server.");
+        }
+      } else {
+        toast.error("An error occurred.");
+      }
+    } finally {
+      setLoading(false);
+      setOpen(false);
     }
+  };
 
   return (
     <>
@@ -102,4 +125,4 @@ export const CellAction:React.FC<CellActionProps> = ({
       </DropdownMenu>
     </>
   );
-}
+};

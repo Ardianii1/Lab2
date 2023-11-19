@@ -48,7 +48,8 @@ export const ReviewForm: React.FC<ReviewFormProps> = () => {
   const [reviewData, setreviewData] = useState<Review | {}>({});
   const params = useParams();
   const router = useRouter();
-  const { userId } = useAuth();
+  const { data: session } = useSession();
+  const userId = session?.user?.email;
 
   const title = reviewData ? "Edit review" : "Create review";
   const description = reviewData ? "Edit a review" : "Add a new review";
@@ -213,7 +214,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = () => {
                     {[1, 2, 3, 4, 5].map((value) => (
                       <label key={value} className="flex items-center">
                         <input
-                        className="cursor-pointer"
+                          className="cursor-pointer"
                           type="radio"
                           {...field}
                           checked={field.value === value}

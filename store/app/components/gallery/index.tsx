@@ -2,7 +2,7 @@
 
 import NextImage from "next/image";
 import { Tab } from "@headlessui/react";
-import { Image } from "@/types";
+import { Image } from "@/lib/types";
 import GalleryTab from "./gallery-tab";
 
 interface GalleryProps {
